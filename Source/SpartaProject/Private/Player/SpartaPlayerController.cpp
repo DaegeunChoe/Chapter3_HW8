@@ -52,7 +52,7 @@ void ASpartaPlayerController::ShowGameHUD()
 			{
 				return;
 			}
-			SpartaGameState->UpdateHUD();
+			//SpartaGameState->UpdateHUD();
 		}
 	}
 }

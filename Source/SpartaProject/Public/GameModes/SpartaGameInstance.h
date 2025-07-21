@@ -16,6 +16,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "GameData")
 	void AddToScore(int32 Amount);
 
+	UFUNCTION(BlueprintCallable)
+	void SetupNextLevel();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameData")
 	int32 TotalScore;
 

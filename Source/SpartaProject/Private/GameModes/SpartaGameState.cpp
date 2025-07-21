@@ -13,17 +13,13 @@ ASpartaGameState::ASpartaGameState()
 	Score = 0;
 	SpawnCoinCount = 0;
 	CollectedCoinCount = 0;
-	LevelDuration = 30.0f;
-	CurrentLevelIndex = 0;
-	MaxLevels = 3;
 }
 
-void ASpartaGameState::BeginPlay()
+void ASpartaGameState::SetCurrentLevelInfo(int CoinCount)
 {
-	Super::BeginPlay();
-	StartLevel();
-
-	GetWorldTimerManager().SetTimer(HUDUpdateTimerHandle, this, &ASpartaGameState::UpdateHUD, 0.1f, true);
+	Score = 0;
+	SpawnCoinCount = CoinCount;
+	CollectedCoinCount = 0;
 }
 
 int32 ASpartaGameState::GetScore() const
@@ -33,20 +29,27 @@ int32 ASpartaGameState::GetScore() const
 
 void ASpartaGameState::AddScore(int32 Amount)
 {
-	UGameInstance* GameInstance = GetGameInstance();
-	if (GameInstance == nullptr)
+	Score += Amount;
+
+	if (USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>())
 	{
-		return;
+		SpartaGameInstance->AddToScore(Amount);
 	}
-	USpartaGameInstance* SpartaGameInstance = Cast<USpartaGameInstance>(GameInstance);
-	if (SpartaGameInstance == nullptr)
-	{
-		return;
-	}
-	SpartaGameInstance->AddToScore(Amount);
 }
 
-void ASpartaGameState::StartLevel()
+void ASpartaGameState::OnCollectCoin()
+{
+	CollectedCoinCount += 1;
+	UE_LOG(LogTemp, Warning, TEXT("OnCoinCollected %d/%d"), CollectedCoinCount, SpawnCoinCount);
+}
+
+bool ASpartaGameState::IsAllCoinCollected() const
+{
+	return (SpawnCoinCount > 0) && (CollectedCoinCount >= SpawnCoinCount);
+}
+
+/*
+void StartLevel()
 {
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 	if (!IsValid(PC))
@@ -104,7 +107,7 @@ void ASpartaGameState::StartLevel()
 	UE_LOG(LogTemp, Warning, TEXT("Current Total Score is %d"), SpartaGameInstance->TotalScore);
 }
 
-void ASpartaGameState::EndLevel()
+void EndLevel()
 {
 	GetWorldTimerManager().ClearTimer(LevelTimerHandle);
 	CurrentLevelIndex++;
@@ -153,10 +156,12 @@ void ASpartaGameState::OnGameOver()
 	SpartaPC->ShowMainMenu(true);
 }
 
-void ASpartaGameState::OnLevelTimeUp()
+
+void OnLevelTimeUp()
 {
 	EndLevel();
 }
+
 
 void ASpartaGameState::UpdateHUD()
 {
@@ -226,3 +231,4 @@ void ASpartaGameState::OnCoinCollected()
 		EndLevel();
 	}
 }
+*/

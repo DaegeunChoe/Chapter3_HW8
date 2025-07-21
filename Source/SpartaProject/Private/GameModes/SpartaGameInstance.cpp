@@ -10,3 +10,8 @@ void USpartaGameInstance::AddToScore(int32 Amount)
 {
 	TotalScore += Amount;
 }
+
+void USpartaGameInstance::SetupNextLevel()
+{
+	CurrentLevelIndex++;
+}
