@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ItemSpawnRow.h"
 #include "GameFramework/Actor.h"
 #include "SpawnVolume.generated.h"
 
 class UBoxComponent;
 class ABaseItem;
+struct FItemSpawnRow;
 
 UCLASS()
 class SPARTAPROJECT_API ASpawnVolume : public AActor
