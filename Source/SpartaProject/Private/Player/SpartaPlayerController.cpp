@@ -161,10 +161,6 @@ void ASpartaPlayerController::RemoveWidgetsFromParent()
 
 void ASpartaPlayerController::CreateSetAndAddWidgetToViewport(TSubclassOf<UUserWidget> WidgetClass, TObjectPtr<UUserWidget>& NewWidget)
 {
-	if (NewWidget != nullptr)
-	{
-		return;
-	}
 	if (WidgetClass)
 	{
 		NewWidget = CreateWidget<UUserWidget>(this, WidgetClass);
