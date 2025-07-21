@@ -13,6 +13,8 @@ class SPARTAPROJECT_API USpartaGameInstance : public UGameInstance
 public:
 	USpartaGameInstance();
 
+	void InitializeNewGame();
+
 	UFUNCTION(BlueprintCallable, Category = "GameData")
 	void AddToScore(int32 Amount);
 

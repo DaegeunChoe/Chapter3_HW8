@@ -11,25 +11,68 @@
 ASpartaGameState::ASpartaGameState()
 {
 	Score = 0;
+	CurrentLevel = 0;
 	SpawnCoinCount = 0;
 	CollectedCoinCount = 0;
+	RemainTime = 0.0f;
 }
 
-void ASpartaGameState::SetCurrentLevelInfo(int CoinCount)
+void ASpartaGameState::BeginPlay()
 {
-	Score = 0;
-	SpawnCoinCount = CoinCount;
-	CollectedCoinCount = 0;
+	Super::BeginPlay();
+	RegisterDelegates();
 }
 
-int32 ASpartaGameState::GetScore() const
+void ASpartaGameState::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
-	return Score;
+	UnregisterDelegates();
+	Super::EndPlay(EndPlayReason);
+}
+
+void ASpartaGameState::SetCurrentLevelInfo(int32 TotalScore, int32 Level, int32 CoinCount, float Duration)
+{
+	SetScore(TotalScore);
+	SetCurrentLevel(Level);
+	SetSpawnCoinCount(CoinCount);
+	SetCollectedCoinCount(0);
+	SetRemainTime(Duration);
+}
+
+
+void ASpartaGameState::SetScore(int32 NewValue)
+{
+	Score = NewValue;
+	OnScoreChanged.Broadcast(Score);
+}
+
+void ASpartaGameState::SetCurrentLevel(int32 NewValue)
+{
+	CurrentLevel = NewValue;
+	OnLevelChanged.Broadcast(CurrentLevel);
+}
+
+void ASpartaGameState::SetSpawnCoinCount(int32 NewValue)
+{
+	SpawnCoinCount = NewValue;
+	OnSpawnCoinCountChanged.Broadcast(SpawnCoinCount);
+}
+
+void ASpartaGameState::SetCollectedCoinCount(int32 NewValue)
+{
+	CollectedCoinCount = NewValue;
+	OnCollectedCoinCountChanged.Broadcast(CollectedCoinCount);
+}
+
+void ASpartaGameState::SetRemainTime(float NewValue)
+{
+	RemainTime = FMath::Max(NewValue, 0.0f);
+	OnRemainTimeChanged.Broadcast(RemainTime);
 }
 
 void ASpartaGameState::AddScore(int32 Amount)
 {
-	Score += Amount;
+	int32 NewScore = Score + Amount;
+	SetScore(NewScore);
 
 	if (USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>())
 	{
@@ -39,13 +82,39 @@ void ASpartaGameState::AddScore(int32 Amount)
 
 void ASpartaGameState::OnCollectCoin()
 {
-	CollectedCoinCount += 1;
+	int32 Increased = CollectedCoinCount + 1;
+	SetCollectedCoinCount(Increased);
+
 	UE_LOG(LogTemp, Warning, TEXT("OnCoinCollected %d/%d"), CollectedCoinCount, SpawnCoinCount);
 }
 
 bool ASpartaGameState::IsAllCoinCollected() const
 {
 	return (SpawnCoinCount > 0) && (CollectedCoinCount >= SpawnCoinCount);
+}
+
+void ASpartaGameState::RegisterDelegates()
+{
+	APlayerController* PC = GetWorld()->GetFirstPlayerController();
+	check(PC);
+
+	ASpartaPlayerController* SpartaPC = Cast<ASpartaPlayerController>(PC);
+	check(SpartaPC);
+
+	OnScoreChanged.AddDynamic(SpartaPC, &ASpartaPlayerController::OnUpdateScore);
+	OnLevelChanged.AddDynamic(SpartaPC, &ASpartaPlayerController::OnUpdateLevel);
+	//OnSpawnCoinCountChanged.AddDynamic(SpartaPC, &ASpartaPlayerController::OnUpdateScore);
+	//OnCollectedCoinCountChanged.AddDynamic(SpartaPC, &ASpartaPlayerController::OnUpdateScore);
+	OnRemainTimeChanged.AddDynamic(SpartaPC, &ASpartaPlayerController::OnUpdateRemainTime);
+}
+
+void ASpartaGameState::UnregisterDelegates()
+{
+	OnScoreChanged.Clear();
+	OnLevelChanged.Clear();
+	OnSpawnCoinCountChanged.Clear();
+	OnCollectedCoinCountChanged.Clear();
+	OnRemainTimeChanged.Clear();
 }
 
 /*

@@ -47,6 +47,8 @@ protected:
 	void EndLevel();
 	void OnLevelTimeUp();
 	void OnGameOver();
+	void UpdateRemainTime();
 
 	FTimerHandle LevelTimerHandle;
+	FTimerHandle RemainTimeUpdateHandle;
 };

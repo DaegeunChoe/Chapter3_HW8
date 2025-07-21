@@ -57,7 +57,8 @@ void ASpartaGameMode::StartLevel()
 	TArray<AActor*> FoundVolumes;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
 
-	const int32 CurrentLevelIndex = 0;
+	const int32 TotalScsore = SpartaGameInstance->TotalScore;
+	const int32 CurrentLevelIndex = SpartaGameInstance->CurrentLevelIndex;
 	const int32 ItemToSpawn = LevelInfos[CurrentLevelIndex].ItemToSpawn;
 	const float LevelDuration = LevelInfos[CurrentLevelIndex].Duration;
 
@@ -78,11 +79,15 @@ void ASpartaGameMode::StartLevel()
 	}
 
 	GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ASpartaGameMode::OnLevelTimeUp, LevelDuration, false);
+	GetWorldTimerManager().SetTimer(RemainTimeUpdateHandle, this, &ThisClass::UpdateRemainTime, 0.1f, true);
 
 	ASpartaGameState* SpartaGameState = GetGameState<ASpartaGameState>();
-	if (!IsValid(SpartaGameState))
+	if (IsValid(SpartaGameState))
 	{
-		SpartaGameState->SetCurrentLevelInfo(SpawnCoinCount);
+		GetWorldTimerManager().SetTimerForNextTick([SpartaGameState, TotalScsore, CurrentLevelIndex, SpawnCoinCount, LevelDuration]()
+			{
+				SpartaGameState->SetCurrentLevelInfo(TotalScsore, CurrentLevelIndex, SpawnCoinCount, LevelDuration);
+			});
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Level %d Start!, Spawned %d Coins"), CurrentLevelIndex + 1, SpawnCoinCount);
@@ -95,6 +100,7 @@ void ASpartaGameMode::EndLevel()
 	ASpartaGameState* SpartaGameState = GetGameState<ASpartaGameState>();
 
 	GetWorldTimerManager().ClearTimer(LevelTimerHandle);
+	GetWorldTimerManager().ClearTimer(RemainTimeUpdateHandle);
 	
 	if (IsValid(SpartaGameInstance) && IsValid(SpartaGameState))
 	{
@@ -134,4 +140,17 @@ void ASpartaGameMode::OnGameOver()
 	}
 	SpartaPC->SetPause(true);
 	SpartaPC->ShowMainMenu(true);
+}
+
+void ASpartaGameMode::UpdateRemainTime()
+{
+	if (ASpartaGameState* SpartaGameState = GetGameState<ASpartaGameState>())
+	{
+		if (RemainTimeUpdateHandle.IsValid())
+		{
+			float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
+			SpartaGameState->SetRemainTime(RemainingTime);
+		}
+		
+	}
 }
