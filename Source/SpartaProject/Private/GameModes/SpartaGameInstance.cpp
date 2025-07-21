@@ -2,22 +2,30 @@
 
 USpartaGameInstance::USpartaGameInstance()
 {
-	TotalScore = 0;
-	CurrentLevelIndex = 0;
+	GameStatistics.Score = 0;
+	GameStatistics.LevelIndex = 0;
+	GameStatistics.SpawnedCoinCount = 0;
+	GameStatistics.CollectedCoinCount = 0;
+	GameStatistics.LevelDuration = 0;
+	GameStatistics.PlayTime = 0;
 }
 
 void USpartaGameInstance::InitializeNewGame()
 {
-	TotalScore = 0;
-	CurrentLevelIndex = 0;
+	GameStatistics.Score = 0;
+	GameStatistics.LevelIndex = 0;
+	GameStatistics.SpawnedCoinCount = 0;
+	GameStatistics.CollectedCoinCount = 0;
+	GameStatistics.LevelDuration = 0;
+	GameStatistics.PlayTime = 0;
 }
 
 void USpartaGameInstance::AddToScore(int32 Amount)
 {
-	TotalScore += Amount;
+	GameStatistics.Score += Amount;
 }
 
 void USpartaGameInstance::SetupNextLevel()
 {
-	CurrentLevelIndex++;
+	GameStatistics.LevelIndex++;
 }

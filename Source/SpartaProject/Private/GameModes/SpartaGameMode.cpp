@@ -57,8 +57,8 @@ void ASpartaGameMode::StartLevel()
 	TArray<AActor*> FoundVolumes;
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
 
-	const int32 TotalScsore = SpartaGameInstance->TotalScore;
-	const int32 CurrentLevelIndex = SpartaGameInstance->CurrentLevelIndex;
+	const int32 TotalScsore = SpartaGameInstance->GetTotalScore();
+	const int32 CurrentLevelIndex = SpartaGameInstance->GetCurrentLevelIndex();
 	const int32 ItemToSpawn = LevelInfos[CurrentLevelIndex].ItemToSpawn;
 	const float LevelDuration = LevelInfos[CurrentLevelIndex].Duration;
 
@@ -86,7 +86,14 @@ void ASpartaGameMode::StartLevel()
 	{
 		GetWorldTimerManager().SetTimerForNextTick([SpartaGameState, TotalScsore, CurrentLevelIndex, SpawnCoinCount, LevelDuration]()
 			{
-				SpartaGameState->SetCurrentLevelInfo(TotalScsore, CurrentLevelIndex, SpawnCoinCount, LevelDuration);
+				FGameStatistics NewGameStatistics;
+				NewGameStatistics.Score = TotalScsore;
+				NewGameStatistics.LevelIndex = CurrentLevelIndex;
+				NewGameStatistics.SpawnedCoinCount = SpawnCoinCount;
+				NewGameStatistics.CollectedCoinCount = 0;
+				NewGameStatistics.LevelDuration = LevelDuration;
+				NewGameStatistics.PlayTime = 0;
+				SpartaGameState->SetCurrentLevelInfo(NewGameStatistics);
 			});
 	}
 }
@@ -102,7 +109,7 @@ void ASpartaGameMode::EndLevel()
 	if (IsValid(SpartaGameInstance) && IsValid(SpartaGameState))
 	{
 		SpartaGameInstance->SetupNextLevel();
-		int32 NextLevelIndex = SpartaGameInstance->CurrentLevelIndex;
+		int32 NextLevelIndex = SpartaGameInstance->GetCurrentLevelIndex();
 		if (LevelInfos.IsValidIndex(NextLevelIndex))
 		{
 			UGameplayStatics::OpenLevel(GetWorld(), LevelInfos[NextLevelIndex].MapName);

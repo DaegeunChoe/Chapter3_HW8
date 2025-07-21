@@ -1,12 +1,12 @@
 #include "SpartaGameState.h"
-#include "Kismet/GameplayStatics.h"
+#include "SpartaGameInstance.h"
 #include "SpawnVolume.h"
 #include "BaseItem.h"
-#include "SpartaGameInstance.h"
 #include "SpartaPlayerController.h"
 #include "CoinItem.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
+#include "Kismet/GameplayStatics.h"
 
 ASpartaGameState::ASpartaGameState()
 {
@@ -29,15 +29,14 @@ void ASpartaGameState::EndPlay(EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void ASpartaGameState::SetCurrentLevelInfo(int32 TotalScore, int32 Level, int32 CoinCount, float Duration)
+void ASpartaGameState::SetCurrentLevelInfo(FGameStatistics GameStatistics)
 {
-	SetScore(TotalScore);
-	SetCurrentLevel(Level);
-	SetSpawnCoinCount(CoinCount);
-	SetCollectedCoinCount(0);
-	SetRemainTime(Duration);
+	SetScore(GameStatistics.Score);
+	SetCurrentLevel(GameStatistics.LevelIndex);
+	SetSpawnCoinCount(GameStatistics.SpawnedCoinCount);
+	SetCollectedCoinCount(GameStatistics.CollectedCoinCount);
+	SetRemainTime(GameStatistics.LevelDuration);
 }
-
 
 void ASpartaGameState::SetScore(int32 NewValue)
 {

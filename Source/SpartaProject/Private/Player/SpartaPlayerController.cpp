@@ -198,7 +198,7 @@ void ASpartaPlayerController::SetResultAnimation()
 	{
 		if (USpartaGameInstance* GameInstance = GetGameInstance<USpartaGameInstance>())
 		{
-			int32 TotalScore = GameInstance->TotalScore;
+			int32 TotalScore = GameInstance->GetTotalScore();
 			TotalScoreText->SetText(FText::FromString(FString::Printf(TEXT("Total Score: %d"), TotalScore)));
 		}
 	}

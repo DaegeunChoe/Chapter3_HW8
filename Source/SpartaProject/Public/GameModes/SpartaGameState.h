@@ -4,6 +4,8 @@
 #include "GameFramework/GameState.h"
 #include "SpartaGameState.generated.h"
 
+struct FGameStatistics;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInt32Changed, int32, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloatChanged, float, NewValue);
 
@@ -17,7 +19,7 @@ public:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
-	void SetCurrentLevelInfo(int32 TotalScore, int32 Level, int32 CoinCount, float Duration);
+	void SetCurrentLevelInfo(FGameStatistics GameStatistics);
 
 	UFUNCTION(BlueprintPure)
 	int32 GetScore() const { return Score; }
