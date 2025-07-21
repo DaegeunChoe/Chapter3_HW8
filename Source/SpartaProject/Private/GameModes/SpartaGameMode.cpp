@@ -89,19 +89,16 @@ void ASpartaGameMode::StartLevel()
 				SpartaGameState->SetCurrentLevelInfo(TotalScsore, CurrentLevelIndex, SpawnCoinCount, LevelDuration);
 			});
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Level %d Start!, Spawned %d Coins"), CurrentLevelIndex + 1, SpawnCoinCount);
-	UE_LOG(LogTemp, Warning, TEXT("Current Total Score is %d"), SpartaGameInstance->TotalScore);
 }
 
 void ASpartaGameMode::EndLevel()
 {
+	GetWorldTimerManager().ClearTimer(LevelTimerHandle);
+	GetWorldTimerManager().ClearTimer(RemainTimeUpdateHandle);
+
 	USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>();
 	ASpartaGameState* SpartaGameState = GetGameState<ASpartaGameState>();
 
-	GetWorldTimerManager().ClearTimer(LevelTimerHandle);
-	GetWorldTimerManager().ClearTimer(RemainTimeUpdateHandle);
-	
 	if (IsValid(SpartaGameInstance) && IsValid(SpartaGameState))
 	{
 		SpartaGameInstance->SetupNextLevel();
