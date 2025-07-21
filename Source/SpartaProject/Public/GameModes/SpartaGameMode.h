@@ -17,10 +17,10 @@ public:
 	FName MapName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Duration;
+	float Duration = 30.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 ItemToSpawn;
+	int32 ItemToSpawn = 40;
 };
 
 UCLASS()
@@ -37,7 +37,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Level")
 	TArray<FLevelInfo> LevelInfos;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Level")
+	UPROPERTY(BlueprintReadOnly, Category = "Level")
 	int32 MaxLevels;
 
 protected:

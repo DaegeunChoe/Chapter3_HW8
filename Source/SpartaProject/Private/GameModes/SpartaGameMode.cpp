@@ -40,7 +40,10 @@ void ASpartaGameMode::BeginPlay()
 	Super::BeginPlay();
 	
 	MaxLevels = LevelInfos.Num();
-	StartLevel();
+	if (MaxLevels > 0)
+	{
+		StartLevel();
+	}
 }
 
 void ASpartaGameMode::StartLevel()
