@@ -35,6 +35,9 @@ public:
 	UFUNCTION()
 	void OnUpdateLevelWave(int32 NewLevel, int32 NewWave);
 
+	UFUNCTION()
+	void OnUpdateCoinCount(int32 CollectedCount, int32 SpawnedCount);
+
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void StartGame();
 

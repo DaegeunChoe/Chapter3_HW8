@@ -73,8 +73,7 @@ protected:
 
 	FOnInt32Changed OnScoreChanged;
 	FOnTwoInt32Changed OnLevelWaveChanged;
-	FOnInt32Changed OnSpawnCoinCountChanged;
-	FOnInt32Changed OnCollectedCoinCountChanged;
+	FOnTwoInt32Changed OnCoinCountChanged;
 	FOnFloatChanged OnRemainTimeChanged;
 
 private:

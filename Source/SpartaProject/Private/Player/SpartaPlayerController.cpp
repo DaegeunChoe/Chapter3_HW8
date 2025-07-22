@@ -99,6 +99,18 @@ void ASpartaPlayerController::OnUpdateLevelWave(int32 NewLevel, int32 NewWave)
 	}
 }
 
+void ASpartaPlayerController::OnUpdateCoinCount(int32 CollectedCount, int32 SpawnedCount)
+{
+	if (HUDWidgetInstance)
+	{
+		if (UTextBlock* CoinText = Cast<UTextBlock>(HUDWidgetInstance->GetWidgetFromName(TEXT("Coin"))))
+		{
+			FText NewText = FText::FromString(FString::Printf(TEXT("Coin: %d/%d"), CollectedCount, SpawnedCount));
+			CoinText->SetText(NewText);
+		}
+	}
+}
+
 void ASpartaPlayerController::StartGame()
 {
 	// Called from WBP Blueprint Event Graph
