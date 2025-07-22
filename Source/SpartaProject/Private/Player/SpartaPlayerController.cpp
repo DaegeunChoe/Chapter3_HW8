@@ -5,6 +5,8 @@
 #include "SpartaGameMode.h"
 #include "SpartaGameInstance.h"
 #include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
+#include "Components/RadialSlider.h"
 #include "Kismet/GameplayStatics.h"
 
 ASpartaPlayerController::ASpartaPlayerController()
@@ -37,7 +39,7 @@ void ASpartaPlayerController::ShowGameHUD()
 	}
 }
 
-void ASpartaPlayerController::ShowMainMenu(bool bIsRestart)
+void ASpartaPlayerController::ShowMainMenu()
 {
 	RemoveWidgetsFromParent();
 	CreateSetAndAddWidgetToViewport(MainMenuWidgetClass, MainMenuWidgetInstance);
@@ -47,18 +49,20 @@ void ASpartaPlayerController::ShowMainMenu(bool bIsRestart)
 		bShowMouseCursor = true;
 		SetInputMode(FInputModeUIOnly());
 	}
+}
 
-	UTextBlock* ButtonText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("StartButtonText")));
+void ASpartaPlayerController::ShowGameOver()
+{
+	RemoveWidgetsFromParent();
+	CreateSetAndAddWidgetToViewport(GameOverWidgetClass, GameOverWidgetInstance);
 
-	if (bIsRestart)
+	if (GameOverWidgetInstance)
 	{
-		SetRestart(ButtonText);
-		SetResultAnimation();
+		bShowMouseCursor = true;
+		SetInputMode(FInputModeUIOnly());
 	}
-	else
-	{
-		SetStart(ButtonText);
-	}
+
+	SetResultAnimation();
 }
 
 void ASpartaPlayerController::OnUpdateScore(int32 NewScore)
@@ -73,14 +77,21 @@ void ASpartaPlayerController::OnUpdateScore(int32 NewScore)
 	}
 }
 
-void ASpartaPlayerController::OnUpdateRemainTime(float NewRemainTime)
+void ASpartaPlayerController::OnUpdateRemainTime(float NewRemainTime, float Duration)
 {
 	if (HUDWidgetInstance)
 	{
 		if (UTextBlock* TimeText = Cast<UTextBlock>(HUDWidgetInstance->GetWidgetFromName(TEXT("Time"))))
 		{
-			FText NewText = FText::FromString(FString::Printf(TEXT("Time: %.1f"), NewRemainTime));
+			FText NewText = FText::FromString(FString::Printf(TEXT("%.1f"), NewRemainTime));
 			TimeText->SetText(NewText);
+		}
+		if (URadialSlider* Slider = Cast<URadialSlider>(HUDWidgetInstance->GetWidgetFromName(TEXT("TimeBar"))))
+		{
+			if (Duration > 0)
+			{
+				Slider->SetValue(NewRemainTime / Duration);
+			}
 		}
 	}
 }
@@ -95,6 +106,37 @@ void ASpartaPlayerController::OnUpdateLevelWave(int32 NewLevel, int32 NewWave)
 			int32 Wave = NewWave + 1;
 			FText NewText = FText::FromString(FString::Printf(TEXT("Level: %d-%d"), Level, Wave));
 			TimeText->SetText(NewText);
+		}
+	}
+}
+
+void ASpartaPlayerController::OnUpdateCoinCount(int32 CollectedCount, int32 SpawnedCount)
+{
+	if (HUDWidgetInstance)
+	{
+		if (UTextBlock* CoinText = Cast<UTextBlock>(HUDWidgetInstance->GetWidgetFromName(TEXT("Coin"))))
+		{
+			FText NewText = FText::FromString(FString::Printf(TEXT("Coin: %d/%d"), CollectedCount, SpawnedCount));
+			CoinText->SetText(NewText);
+		}
+	}
+}
+
+void ASpartaPlayerController::OnUpdateHealth(float Health, float MaxHealth)
+{
+	if (HUDWidgetInstance)
+	{
+		if (UTextBlock* HPText = Cast<UTextBlock>(HUDWidgetInstance->GetWidgetFromName(TEXT("HP"))))
+		{
+			FText NewText = FText::FromString(FString::Printf(TEXT("HP %.0f"), Health));
+			HPText->SetText(NewText);
+		}
+		if (UProgressBar* HPBar = Cast<UProgressBar>(HUDWidgetInstance->GetWidgetFromName(TEXT("HPBar"))))
+		{
+			if (MaxHealth > 0)
+			{
+				HPBar->SetPercent(Health / MaxHealth);
+			}
 		}
 	}
 }
@@ -139,7 +181,7 @@ void ASpartaPlayerController::BeginPlay()
 	FString CurrentMapName = GetWorld()->GetMapName();
 	if (CurrentMapName.Contains(TEXT("MenuLevel")))
 	{
-		ShowMainMenu(false);
+		ShowMainMenu();
 	}
 	else
 	{
@@ -159,6 +201,11 @@ void ASpartaPlayerController::RemoveWidgetsFromParent()
 		MainMenuWidgetInstance->RemoveFromParent();
 		MainMenuWidgetInstance = nullptr;
 	}
+	if (GameOverWidgetInstance)
+	{
+		GameOverWidgetInstance->RemoveFromParent();
+		GameOverWidgetInstance = nullptr;
+	}
 }
 
 void ASpartaPlayerController::CreateSetAndAddWidgetToViewport(TSubclassOf<UUserWidget> WidgetClass, TObjectPtr<UUserWidget>& NewWidget)
@@ -173,35 +220,31 @@ void ASpartaPlayerController::CreateSetAndAddWidgetToViewport(TSubclassOf<UUserW
 	}
 }
 
-void ASpartaPlayerController::SetStart(UTextBlock* ButtonText)
-{
-	if (ButtonText)
-	{
-		ButtonText->SetText(FText::FromString(TEXT("Start")));
-	}
-}
-
-void ASpartaPlayerController::SetRestart(UTextBlock* ButtonText)
-{
-	if (ButtonText)
-	{
-		ButtonText->SetText(FText::FromString(TEXT("Restart")));
-	}
-}
-
 void ASpartaPlayerController::SetResultAnimation()
 {
-	UFunction* PlayAnimFunc = MainMenuWidgetInstance->FindFunction(FName("PlayGameOverAnim"));
-	if (PlayAnimFunc)
-	{
-		MainMenuWidgetInstance->ProcessEvent(PlayAnimFunc, nullptr);
-	}
-	if (UTextBlock* TotalScoreText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("TotalScoreText"))))
+	if (GameOverWidgetInstance)
 	{
 		if (USpartaGameInstance* GameInstance = GetGameInstance<USpartaGameInstance>())
 		{
-			int32 TotalScore = GameInstance->GetTotalScore();
-			TotalScoreText->SetText(FText::FromString(FString::Printf(TEXT("Total Score: %d"), TotalScore)));
+			if (UTextBlock* TotalScoreText = Cast<UTextBlock>(GameOverWidgetInstance->GetWidgetFromName(TEXT("TotalScoreText"))))
+			{
+				int32 TotalScore = GameInstance->GetTotalScore();
+				FText NewText = FText::FromString(FString::Printf(TEXT("Total Score: %d"), TotalScore));
+				TotalScoreText->SetText(NewText);
+			}
+			if (UTextBlock* TotalCoinText = Cast<UTextBlock>(GameOverWidgetInstance->GetWidgetFromName(TEXT("TotalCoinText"))))
+			{
+				int32 Spawned = GameInstance->GetSpawnedCoinCount();
+				int32 Collected = GameInstance->GetCollectedCoinCount();
+				FText NewText = FText::FromString(FString::Printf(TEXT("Coins: %d/%d"), Collected, Spawned));
+				TotalCoinText->SetText(NewText);
+			}
+			if (UTextBlock* TotalPlayTimeText = Cast<UTextBlock>(GameOverWidgetInstance->GetWidgetFromName(TEXT("TotalPlayTimeText"))))
+			{
+				float  TotalPlayTime = GameInstance->GetTotalPlayTime();
+				FText NewText = FText::FromString(FString::Printf(TEXT("PlayTime: %.2f"), TotalPlayTime));
+				TotalPlayTimeText->SetText(NewText);
+			}
 		}
 	}
 }

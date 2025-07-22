@@ -205,23 +205,19 @@ void ASpartaCharacter::StopSprint(const FInputActionValue& Value)
 
 void ASpartaCharacter::UpdateHPWidget()
 {
-	if (!IsValid(HPWidget))
+	if (IsValid(HPWidget))
 	{
-		return;
+		if (UUserWidget* WidgetInstance = HPWidget->GetUserWidgetObject())
+		{
+			if (UProgressBar* HPBar = Cast<UProgressBar>(WidgetInstance->GetWidgetFromName(TEXT("OverHeadHPBar"))))
+			{
+				HPBar->SetPercent(Health / MaxHealth);
+			}
+		}
 	}
 
-	UUserWidget* WidgetInstance = HPWidget->GetUserWidgetObject();
-	if (!IsValid(WidgetInstance))
+	if (ASpartaPlayerController* PC = GetController<ASpartaPlayerController>())
 	{
-		return;
+		PC->OnUpdateHealth(Health, MaxHealth);
 	}
-
-	UProgressBar* HPBar = Cast<UProgressBar>(WidgetInstance->GetWidgetFromName(TEXT("OverHeadHPBar")));
-	if (!IsValid(HPBar))
-	{
-		return;
-	}
-
-	HPBar->SetPercent(Health / MaxHealth);
-
 }
