@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
+#include "SpartaGameInstance.h"
 #include "SpartaGameState.generated.h"
 
 struct FGameStatistics;
@@ -22,19 +23,19 @@ public:
 	void SetCurrentLevelInfo(FGameStatistics GameStatistics);
 
 	UFUNCTION(BlueprintPure)
-	int32 GetScore() const { return Score; }
+	int32 GetScore() const { return GameStatistics.Score; }
 
 	UFUNCTION(BlueprintPure)
-	int32 GetCurrentLevel() const { return CurrentLevel; }
+	int32 GetCurrentLevel() const { return GameStatistics.LevelIndex; }
 
 	UFUNCTION(BlueprintPure)
-	int32 GetCurrentWave() const { return CurrentWave; }
+	int32 GetCurrentWave() const { return GameStatistics.WaveIndex; }
 
 	UFUNCTION(BlueprintPure)
-	int32 GetSpawnCoinCount() const { return SpawnCoinCount; }
+	int32 GetSpawnCoinCount() const { return GameStatistics.SpawnedCoinCount; }
 
 	UFUNCTION(BlueprintPure)
-	int32 GetCollectedCoinCount() const { return CollectedCoinCount; }
+	int32 GetCollectedCoinCount() const { return GameStatistics.CollectedCoinCount; }
 
 	UFUNCTION(BlueprintPure)
 	float GetRemainTime() const { return RemainTime; }
@@ -65,11 +66,7 @@ public:
 	bool IsAllCoinCollected() const;
 
 protected:
-	int32 Score;
-	int32 CurrentLevel;
-	int32 CurrentWave;
-	int32 SpawnCoinCount;
-	int32 CollectedCoinCount;
+	FGameStatistics GameStatistics;
 	float RemainTime;
 
 	FOnInt32Changed OnScoreChanged;
