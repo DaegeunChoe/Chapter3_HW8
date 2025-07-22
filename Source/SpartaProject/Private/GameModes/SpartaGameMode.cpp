@@ -6,7 +6,6 @@
 #include "Kismet/GameplayStatics.h"
 #include "SpawnVolume.h"
 #include "BaseItem.h"
-#include "CoinItem.h"
 
 ASpartaGameMode::ASpartaGameMode()
 {
@@ -164,7 +163,7 @@ void ASpartaGameMode::SpawnItems(int32 ItemToSpawn, int32& SpawnCoinCount)
 			if (ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[0]))
 			{
 				ABaseItem* SpawnedItem = SpawnVolume->SpawnRandomItem();
-				if (IsValid(SpawnedItem) && SpawnedItem->IsA(ACoinItem::StaticClass()))
+				if (IsValid(SpawnedItem) && SpawnedItem->GetItemType() == FName(TEXT("Coin")))
 				{
 					SpawnCoinCount++;
 				}
