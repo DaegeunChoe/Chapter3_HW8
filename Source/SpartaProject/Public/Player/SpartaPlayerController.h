@@ -38,6 +38,9 @@ public:
 	UFUNCTION()
 	void OnUpdateCoinCount(int32 CollectedCount, int32 SpawnedCount);
 
+	UFUNCTION()
+	void OnUpdateHealth(float Health, float MaxHealth);
+
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void StartGame();
 

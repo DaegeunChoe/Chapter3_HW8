@@ -5,6 +5,7 @@
 #include "SpartaGameMode.h"
 #include "SpartaGameInstance.h"
 #include "Components/TextBlock.h"
+#include "Components/ProgressBar.h"
 #include "Components/RadialSlider.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -115,6 +116,25 @@ void ASpartaPlayerController::OnUpdateCoinCount(int32 CollectedCount, int32 Spaw
 		{
 			FText NewText = FText::FromString(FString::Printf(TEXT("Coin: %d/%d"), CollectedCount, SpawnedCount));
 			CoinText->SetText(NewText);
+		}
+	}
+}
+
+void ASpartaPlayerController::OnUpdateHealth(float Health, float MaxHealth)
+{
+	if (HUDWidgetInstance)
+	{
+		if (UTextBlock* HPText = Cast<UTextBlock>(HUDWidgetInstance->GetWidgetFromName(TEXT("HP"))))
+		{
+			FText NewText = FText::FromString(FString::Printf(TEXT("HP %.0f"), Health));
+			HPText->SetText(NewText);
+		}
+		if (UProgressBar* HPBar = Cast<UProgressBar>(HUDWidgetInstance->GetWidgetFromName(TEXT("HPBar"))))
+		{
+			if (MaxHealth > 0)
+			{
+				HPBar->SetPercent(Health / MaxHealth);
+			}
 		}
 	}
 }
