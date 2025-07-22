@@ -5,6 +5,7 @@
 #include "SpartaGameMode.h"
 #include "SpartaGameInstance.h"
 #include "Components/TextBlock.h"
+#include "Components/RadialSlider.h"
 #include "Kismet/GameplayStatics.h"
 
 ASpartaPlayerController::ASpartaPlayerController()
@@ -73,14 +74,21 @@ void ASpartaPlayerController::OnUpdateScore(int32 NewScore)
 	}
 }
 
-void ASpartaPlayerController::OnUpdateRemainTime(float NewRemainTime)
+void ASpartaPlayerController::OnUpdateRemainTime(float NewRemainTime, float Duration)
 {
 	if (HUDWidgetInstance)
 	{
 		if (UTextBlock* TimeText = Cast<UTextBlock>(HUDWidgetInstance->GetWidgetFromName(TEXT("Time"))))
 		{
-			FText NewText = FText::FromString(FString::Printf(TEXT("Time: %.1f"), NewRemainTime));
+			FText NewText = FText::FromString(FString::Printf(TEXT("%.1f"), NewRemainTime));
 			TimeText->SetText(NewText);
+		}
+		if (URadialSlider* Slider = Cast<URadialSlider>(HUDWidgetInstance->GetWidgetFromName(TEXT("TimeBar"))))
+		{
+			if (Duration > 0)
+			{
+				Slider->SetValue(NewRemainTime / Duration);
+			}
 		}
 	}
 }

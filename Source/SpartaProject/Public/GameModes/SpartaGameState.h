@@ -8,7 +8,7 @@
 struct FGameStatistics;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInt32Changed, int32, NewValue);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloatChanged, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTwoFloatChanged, float, NewValue0, float, NewValue1);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTwoInt32Changed, int32, NewValue0, int32, NewValue1);
 
 UCLASS()
@@ -57,6 +57,9 @@ public:
 	void SetCollectedCoinCount(int32 NewValue);
 
 	UFUNCTION(BlueprintCallable)
+	void SetWaveDuration(float NewValue);
+
+	UFUNCTION(BlueprintCallable)
 	void SetRemainTime(float NewValue);
 
 	UFUNCTION(BlueprintCallable)
@@ -74,7 +77,7 @@ protected:
 	FOnInt32Changed OnScoreChanged;
 	FOnTwoInt32Changed OnLevelWaveChanged;
 	FOnTwoInt32Changed OnCoinCountChanged;
-	FOnFloatChanged OnRemainTimeChanged;
+	FOnTwoFloatChanged OnRemainTimeChanged;
 
 private:
 	void RegisterDelegates();

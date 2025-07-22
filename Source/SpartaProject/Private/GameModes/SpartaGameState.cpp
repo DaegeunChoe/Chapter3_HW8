@@ -32,6 +32,7 @@ void ASpartaGameState::SetCurrentLevelInfo(FGameStatistics NewGameStatistics)
 	SetCurrentWave(NewGameStatistics.WaveIndex);
 	SetSpawnCoinCount(NewGameStatistics.SpawnedCoinCount);
 	SetCollectedCoinCount(NewGameStatistics.CollectedCoinCount);
+	SetWaveDuration(NewGameStatistics.WaveDuration);
 	SetRemainTime(NewGameStatistics.WaveDuration);
 }
 
@@ -65,10 +66,17 @@ void ASpartaGameState::SetCollectedCoinCount(int32 NewValue)
 	OnCoinCountChanged.Broadcast(NewValue, GameStatistics.SpawnedCoinCount);
 }
 
+void ASpartaGameState::SetWaveDuration(float NewValue)
+{
+	GameStatistics.WaveDuration = FMath::Max(NewValue, 0.0f);
+	OnRemainTimeChanged.Broadcast(RemainTime, GameStatistics.WaveDuration);
+}
+
 void ASpartaGameState::SetRemainTime(float NewValue)
 {
 	RemainTime = FMath::Max(NewValue, 0.0f);
-	OnRemainTimeChanged.Broadcast(RemainTime);
+	GameStatistics.PlayTime = GameStatistics.WaveDuration - RemainTime;
+	OnRemainTimeChanged.Broadcast(RemainTime, GameStatistics.WaveDuration);
 }
 
 void ASpartaGameState::AddScore(int32 Amount)

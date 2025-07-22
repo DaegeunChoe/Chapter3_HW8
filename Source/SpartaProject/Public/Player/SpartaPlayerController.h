@@ -30,7 +30,7 @@ public:
 	void OnUpdateScore(int32 NewScore);
 
 	UFUNCTION()
-	void OnUpdateRemainTime(float NewRemainTime);
+	void OnUpdateRemainTime(float NewRemainTime, float Duration);
 
 	UFUNCTION()
 	void OnUpdateLevelWave(int32 NewLevel, int32 NewWave);
