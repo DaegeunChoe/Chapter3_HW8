@@ -67,5 +67,4 @@ protected:
 
 	float NormalSpeed;
 	float SprintSpeedMultiplier;
-	float SprintSpeed;
 };

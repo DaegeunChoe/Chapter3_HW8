@@ -29,7 +29,6 @@ ASpartaCharacter::ASpartaCharacter()
 
 	NormalSpeed = 600.0f;
 	SprintSpeedMultiplier = 1.7f;
-	SprintSpeed = NormalSpeed * SprintSpeedMultiplier;
 
 	GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 
@@ -191,7 +190,7 @@ void ASpartaCharacter::StartSprint(const FInputActionValue& Value)
 {
 	if (GetCharacterMovement())
 	{
-		GetCharacterMovement()->MaxWalkSpeed = SprintSpeed;
+		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed * SprintSpeedMultiplier;
 	}
 }
 
