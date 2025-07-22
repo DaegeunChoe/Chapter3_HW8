@@ -55,10 +55,10 @@ public:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Display)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Item)
 	FName TypeName;
 
-	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly, Category = Display)
+	UPROPERTY(EditDefaultsOnly, Instanced, BlueprintReadOnly, Category = Item)
 	TArray<TObjectPtr<UItemFragment>> Fragments;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Itme|Component")

@@ -3,7 +3,6 @@
 #include "SpawnVolume.h"
 #include "BaseItem.h"
 #include "SpartaPlayerController.h"
-#include "CoinItem.h"
 #include "Blueprint/UserWidget.h"
 #include "Components/TextBlock.h"
 #include "Kismet/GameplayStatics.h"
