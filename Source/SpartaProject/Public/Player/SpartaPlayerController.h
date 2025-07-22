@@ -44,9 +44,6 @@ public:
 	UFUNCTION()
 	void OnUpdateHealth(float Health, float MaxHealth);
 
-	UFUNCTION(BlueprintCallable, Category = "Menu")
-	void StartGame();
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<UInputMappingContext> InputMappingContext;
 
