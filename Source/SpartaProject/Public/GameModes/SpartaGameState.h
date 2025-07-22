@@ -28,6 +28,9 @@ public:
 	int32 GetCurrentLevel() const { return CurrentLevel; }
 
 	UFUNCTION(BlueprintPure)
+	int32 GetCurrentWave() const { return CurrentWave; }
+
+	UFUNCTION(BlueprintPure)
 	int32 GetSpawnCoinCount() const { return SpawnCoinCount; }
 
 	UFUNCTION(BlueprintPure)
@@ -41,6 +44,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentLevel(int32 NewValue);
+
+	UFUNCTION(BlueprintCallable)
+	void SetCurrentWave(int32 NewValue);
 
 	UFUNCTION(BlueprintCallable)
 	void SetSpawnCoinCount(int32 NewValue);
@@ -61,12 +67,14 @@ public:
 protected:
 	int32 Score;
 	int32 CurrentLevel;
+	int32 CurrentWave;
 	int32 SpawnCoinCount;
 	int32 CollectedCoinCount;
 	float RemainTime;
 
 	FOnInt32Changed OnScoreChanged;
 	FOnInt32Changed OnLevelChanged;
+	FOnInt32Changed OnWaveChanged;
 	FOnInt32Changed OnSpawnCoinCountChanged;
 	FOnInt32Changed OnCollectedCoinCountChanged;
 	FOnFloatChanged OnRemainTimeChanged;

@@ -89,6 +89,7 @@ void ASpartaGameMode::StartLevel()
 				FGameStatistics NewGameStatistics;
 				NewGameStatistics.Score = TotalScsore;
 				NewGameStatistics.LevelIndex = CurrentLevelIndex;
+				NewGameStatistics.WaveIndex = 0;
 				NewGameStatistics.SpawnedCoinCount = SpawnCoinCount;
 				NewGameStatistics.CollectedCoinCount = 0;
 				NewGameStatistics.LevelDuration = LevelDuration;

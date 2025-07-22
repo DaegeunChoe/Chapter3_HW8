@@ -9,12 +9,13 @@ struct FGameStatistics
 {
 	GENERATED_BODY()
 
-	int32 Score;
-	int32 LevelIndex;
-	int32 SpawnedCoinCount;
-	int32 CollectedCoinCount;
-	float LevelDuration;
-	float PlayTime;
+	int32 Score = 0;
+	int32 LevelIndex = 0;
+	int32 WaveIndex = 0;
+	int32 SpawnedCoinCount = 0;
+	int32 CollectedCoinCount = 0;
+	float LevelDuration = 0;
+	float PlayTime = 0;
 };
 
 UCLASS()
