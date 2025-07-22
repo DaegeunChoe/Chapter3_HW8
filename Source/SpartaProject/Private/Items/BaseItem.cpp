@@ -16,25 +16,49 @@ ABaseItem::ABaseItem()
 
 	StaticMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMesh->SetupAttachment(Collision);
+}
+
+void ABaseItem::BeginPlay()
+{
+	Super::BeginPlay();
 
 	Collision->OnComponentBeginOverlap.AddDynamic(this, &ABaseItem::OnItemBeginOverlap);
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ABaseItem::OnItemEndOverlap);
+
+	for (UItemFragment* Fragment : Fragments)
+	{
+		if (Fragment)
+		{
+			Fragment->SetItemActor(this);
+			Fragment->OnBeginPlay();
+		}
+	}
 }
 
 void ABaseItem::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
-	if (DestroyParticleTimerHandle.IsValid())
+	Collision->OnComponentBeginOverlap.Clear();
+	Collision->OnComponentEndOverlap.Clear();
+
+	for (UItemFragment* Fragment : Fragments)
 	{
-		GetWorld()->GetTimerManager().ClearTimer(DestroyParticleTimerHandle);
+		if (Fragment)
+		{
+			Fragment->OnEndPlay();
+		}
 	}
-	DestroyItem();
+
+	Super::EndPlay(EndPlayReason);
 }
 
 void ABaseItem::OnItemBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (IsValid(OtherActor) && OtherActor->ActorHasTag(TEXT("Player")))
+	for (UItemFragment* Fragment : Fragments)
 	{
-		ActivateItem(OtherActor);
+		if (Fragment && IsValid(OtherActor) && OtherActor->ActorHasTag(TEXT("Player")))
+		{
+			Fragment->OnBeginOverlap(OverlappedComp, OtherActor, OtherComp);
+		}
 	}
 }
 
@@ -42,6 +66,7 @@ void ABaseItem::OnItemEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Ot
 {
 }
 
+/*
 void ABaseItem::ActivateItem(AActor* Activator)
 {
 	if (PickupParticle)
@@ -79,3 +104,4 @@ void ABaseItem::RemoveParticle()
 		Particle->DestroyComponent();
 	}
 }
+*/
