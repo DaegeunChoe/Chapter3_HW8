@@ -4,9 +4,11 @@
 #include "EnhancedInputComponent.h"
 #include "SpartaPlayerController.h"
 #include "SpartaGameState.h"
+#include "SpartaGameMode.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/WidgetComponent.h"
 #include "Components/ProgressBar.h"
+#include "Kismet/GameplayStatics.h"
 
 ASpartaCharacter::ASpartaCharacter()
 {
@@ -111,10 +113,11 @@ void ASpartaCharacter::AddHealth(float Amout)
 
 void ASpartaCharacter::OnDeath()
 {
-	ASpartaGameState* GameState = GetWorld() ? GetWorld()->GetGameState<ASpartaGameState>() : nullptr;
-	if (GameState)
+	AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(this);
+	ASpartaGameMode* SpartaGameMode = Cast<ASpartaGameMode>(GameModeBase);
+	if (SpartaGameMode)
 	{
-		GameState->OnGameOver();
+		SpartaGameMode->NotifyDeathOfCharacter(this);
 	}
 }
 

@@ -1,6 +1,7 @@
 #include "CoinItem.h"
 #include "Engine/World.h"
-#include "SpartaGameState.h"
+#include "Kismet/GameplayStatics.h"
+#include "SpartaGameMode.h"
 
 ACoinItem::ACoinItem()
 {
@@ -13,19 +14,12 @@ void ACoinItem::ActivateItem(AActor* Activator)
 	Super::ActivateItem(Activator);
 	if (IsValid(Activator) && Activator->ActorHasTag(TEXT("Player")))
 	{
-		UWorld* World = GetWorld();
-		if (!IsValid(World))
+		AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(this);
+		ASpartaGameMode* SpartaGameMode = Cast<ASpartaGameMode>(GameModeBase);
+		if (SpartaGameMode)
 		{
-			return;
+			SpartaGameMode->CollectCoinAndAddScore(PointValue);
 		}
-
-		ASpartaGameState* GameState = World->GetGameState<ASpartaGameState>();
-		if (!IsValid(GameState))
-		{
-			return;
-		}
-		GameState->AddScore(PointValue);
-		GameState->OnCoinCollected();
 		DestroyItem();
 	}
 }

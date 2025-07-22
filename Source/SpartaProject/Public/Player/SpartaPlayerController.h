@@ -7,6 +7,7 @@
 class UInputMappingContext;
 class UInputAction;
 class UUserWidget;
+class UTextBlock;
 
 UCLASS()
 class SPARTAPROJECT_API ASpartaPlayerController : public APlayerController
@@ -24,6 +25,15 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void ShowMainMenu(bool bIsRestart);
+
+	UFUNCTION()
+	void OnUpdateScore(int32 NewScore);
+
+	UFUNCTION()
+	void OnUpdateRemainTime(float NewRemainTime);
+
+	UFUNCTION()
+	void OnUpdateLevel(int32 NewLevel);
 
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void StartGame();
@@ -46,15 +56,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
 	TSubclassOf<UUserWidget> HUDWidgetClass;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "HUD")
+	UPROPERTY(BlueprintReadWrite, Category = "HUD")
 	TObjectPtr<UUserWidget> HUDWidgetInstance;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Menu")
 	TSubclassOf<UUserWidget> MainMenuWidgetClass;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "Menu")
+	UPROPERTY(BlueprintReadWrite, Category = "Menu")
 	TObjectPtr<UUserWidget> MainMenuWidgetInstance;
 
 protected:
 	virtual void BeginPlay() override;
+
+private:
+	void RemoveWidgetsFromParent();
+	void CreateSetAndAddWidgetToViewport(TSubclassOf<UUserWidget> WidgetClass, TObjectPtr<UUserWidget>& NewWidget);
+
+	void SetStart(UTextBlock* ButtonText);
+	void SetRestart(UTextBlock* ButtonText);
+	void SetResultAnimation();
 };

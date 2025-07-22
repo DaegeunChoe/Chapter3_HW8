@@ -1,5 +1,6 @@
 #include "SpawnVolume.h"
 #include "BaseItem.h"
+#include "ItemSpawnRow.h"
 #include "Components/BoxComponent.h"
 
 ASpawnVolume::ASpawnVolume()
