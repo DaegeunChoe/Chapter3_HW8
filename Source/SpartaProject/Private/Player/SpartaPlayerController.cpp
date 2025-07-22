@@ -39,7 +39,7 @@ void ASpartaPlayerController::ShowGameHUD()
 	}
 }
 
-void ASpartaPlayerController::ShowMainMenu(bool bIsRestart)
+void ASpartaPlayerController::ShowMainMenu()
 {
 	RemoveWidgetsFromParent();
 	CreateSetAndAddWidgetToViewport(MainMenuWidgetClass, MainMenuWidgetInstance);
@@ -49,18 +49,20 @@ void ASpartaPlayerController::ShowMainMenu(bool bIsRestart)
 		bShowMouseCursor = true;
 		SetInputMode(FInputModeUIOnly());
 	}
+}
 
-	UTextBlock* ButtonText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("StartButtonText")));
+void ASpartaPlayerController::ShowGameOver()
+{
+	RemoveWidgetsFromParent();
+	CreateSetAndAddWidgetToViewport(GameOverWidgetClass, GameOverWidgetInstance);
 
-	if (bIsRestart)
+	if (GameOverWidgetInstance)
 	{
-		SetRestart(ButtonText);
-		SetResultAnimation();
+		bShowMouseCursor = true;
+		SetInputMode(FInputModeUIOnly());
 	}
-	else
-	{
-		SetStart(ButtonText);
-	}
+
+	SetResultAnimation();
 }
 
 void ASpartaPlayerController::OnUpdateScore(int32 NewScore)
@@ -179,7 +181,7 @@ void ASpartaPlayerController::BeginPlay()
 	FString CurrentMapName = GetWorld()->GetMapName();
 	if (CurrentMapName.Contains(TEXT("MenuLevel")))
 	{
-		ShowMainMenu(false);
+		ShowMainMenu();
 	}
 	else
 	{
@@ -199,6 +201,11 @@ void ASpartaPlayerController::RemoveWidgetsFromParent()
 		MainMenuWidgetInstance->RemoveFromParent();
 		MainMenuWidgetInstance = nullptr;
 	}
+	if (GameOverWidgetInstance)
+	{
+		GameOverWidgetInstance->RemoveFromParent();
+		GameOverWidgetInstance = nullptr;
+	}
 }
 
 void ASpartaPlayerController::CreateSetAndAddWidgetToViewport(TSubclassOf<UUserWidget> WidgetClass, TObjectPtr<UUserWidget>& NewWidget)
@@ -213,35 +220,19 @@ void ASpartaPlayerController::CreateSetAndAddWidgetToViewport(TSubclassOf<UUserW
 	}
 }
 
-void ASpartaPlayerController::SetStart(UTextBlock* ButtonText)
-{
-	if (ButtonText)
-	{
-		ButtonText->SetText(FText::FromString(TEXT("Start")));
-	}
-}
-
-void ASpartaPlayerController::SetRestart(UTextBlock* ButtonText)
-{
-	if (ButtonText)
-	{
-		ButtonText->SetText(FText::FromString(TEXT("Restart")));
-	}
-}
-
 void ASpartaPlayerController::SetResultAnimation()
 {
-	UFunction* PlayAnimFunc = MainMenuWidgetInstance->FindFunction(FName("PlayGameOverAnim"));
-	if (PlayAnimFunc)
-	{
-		MainMenuWidgetInstance->ProcessEvent(PlayAnimFunc, nullptr);
-	}
-	if (UTextBlock* TotalScoreText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("TotalScoreText"))))
-	{
-		if (USpartaGameInstance* GameInstance = GetGameInstance<USpartaGameInstance>())
-		{
-			int32 TotalScore = GameInstance->GetTotalScore();
-			TotalScoreText->SetText(FText::FromString(FString::Printf(TEXT("Total Score: %d"), TotalScore)));
-		}
-	}
+	//UFunction* PlayAnimFunc = MainMenuWidgetInstance->FindFunction(FName("PlayGameOverAnim"));
+	//if (PlayAnimFunc)
+	//{
+	//	MainMenuWidgetInstance->ProcessEvent(PlayAnimFunc, nullptr);
+	//}
+	//if (UTextBlock* TotalScoreText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("TotalScoreText"))))
+	//{
+	//	if (USpartaGameInstance* GameInstance = GetGameInstance<USpartaGameInstance>())
+	//	{
+	//		int32 TotalScore = GameInstance->GetTotalScore();
+	//		TotalScoreText->SetText(FText::FromString(FString::Printf(TEXT("Total Score: %d"), TotalScore)));
+	//	}
+	//}
 }

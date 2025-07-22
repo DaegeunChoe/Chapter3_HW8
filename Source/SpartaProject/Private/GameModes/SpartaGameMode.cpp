@@ -207,7 +207,7 @@ void ASpartaGameMode::OnGameOver()
 		return;
 	}
 	SpartaPC->SetPause(true);
-	SpartaPC->ShowMainMenu(true);
+	SpartaPC->ShowGameOver();
 }
 
 void ASpartaGameMode::UpdateRemainTime()

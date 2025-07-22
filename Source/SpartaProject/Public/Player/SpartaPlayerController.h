@@ -24,7 +24,10 @@ public:
 	void ShowGameHUD();
 
 	UFUNCTION(BlueprintCallable, Category = "Menu")
-	void ShowMainMenu(bool bIsRestart);
+	void ShowMainMenu();
+
+	UFUNCTION(BlueprintCallable, Category = "Menu")
+	void ShowGameOver();
 
 	UFUNCTION()
 	void OnUpdateScore(int32 NewScore);
@@ -59,17 +62,23 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Input")
 	TObjectPtr<UInputAction> SprintAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "HUD")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<UUserWidget> HUDWidgetClass;
 
-	UPROPERTY(BlueprintReadWrite, Category = "HUD")
+	UPROPERTY(BlueprintReadWrite, Category = "Widget")
 	TObjectPtr<UUserWidget> HUDWidgetInstance;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Menu")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<UUserWidget> MainMenuWidgetClass;
 
-	UPROPERTY(BlueprintReadWrite, Category = "Menu")
+	UPROPERTY(BlueprintReadWrite, Category = "Widget")
 	TObjectPtr<UUserWidget> MainMenuWidgetInstance;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
+	TSubclassOf<UUserWidget> GameOverWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite, Category = "Widget")
+	TObjectPtr<UUserWidget> GameOverWidgetInstance;
 
 protected:
 	virtual void BeginPlay() override;
@@ -78,7 +87,5 @@ private:
 	void RemoveWidgetsFromParent();
 	void CreateSetAndAddWidgetToViewport(TSubclassOf<UUserWidget> WidgetClass, TObjectPtr<UUserWidget>& NewWidget);
 
-	void SetStart(UTextBlock* ButtonText);
-	void SetRestart(UTextBlock* ButtonText);
 	void SetResultAnimation();
 };
