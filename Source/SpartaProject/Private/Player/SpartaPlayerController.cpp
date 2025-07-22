@@ -85,13 +85,15 @@ void ASpartaPlayerController::OnUpdateRemainTime(float NewRemainTime)
 	}
 }
 
-void ASpartaPlayerController::OnUpdateLevel(int32 NewLevel)
+void ASpartaPlayerController::OnUpdateLevelWave(int32 NewLevel, int32 NewWave)
 {
 	if (HUDWidgetInstance)
 	{
 		if (UTextBlock* TimeText = Cast<UTextBlock>(HUDWidgetInstance->GetWidgetFromName(TEXT("Level"))))
 		{
-			FText NewText = FText::FromString(FString::Printf(TEXT("Level: %d"), NewLevel + 1));
+			int32 Level = NewLevel + 1;
+			int32 Wave = NewWave + 1;
+			FText NewText = FText::FromString(FString::Printf(TEXT("Level: %d-%d"), Level, Wave));
 			TimeText->SetText(NewText);
 		}
 	}

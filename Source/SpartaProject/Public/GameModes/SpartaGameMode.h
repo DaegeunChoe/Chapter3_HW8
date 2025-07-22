@@ -60,10 +60,13 @@ protected:
 	void EndLevel();
 	void StartWave();
 	void EndWave();
-	void OnLevelTimeUp();
+	void OnWaveTimeUp();
 	void OnGameOver();
 	void UpdateRemainTime();
 
-	FTimerHandle LevelTimerHandle;
+	void SpawnItems(int32 ItemToSpawn, int32& SpawnCoinCount);
+	void ClearWave();
+
+	FTimerHandle WaveTimerHandle;
 	FTimerHandle RemainTimeUpdateHandle;
 };

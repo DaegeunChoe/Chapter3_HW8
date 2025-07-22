@@ -9,6 +9,7 @@ struct FGameStatistics;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInt32Changed, int32, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloatChanged, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTwoInt32Changed, int32, NewValue0, int32, NewValue1);
 
 UCLASS()
 class SPARTAPROJECT_API ASpartaGameState : public AGameState
@@ -70,8 +71,7 @@ protected:
 	float RemainTime;
 
 	FOnInt32Changed OnScoreChanged;
-	FOnInt32Changed OnLevelChanged;
-	FOnInt32Changed OnWaveChanged;
+	FOnTwoInt32Changed OnLevelWaveChanged;
 	FOnInt32Changed OnSpawnCoinCountChanged;
 	FOnInt32Changed OnCollectedCoinCountChanged;
 	FOnFloatChanged OnRemainTimeChanged;

@@ -7,7 +7,7 @@ USpartaGameInstance::USpartaGameInstance()
 	GameStatistics.WaveIndex = 0;
 	GameStatistics.SpawnedCoinCount = 0;
 	GameStatistics.CollectedCoinCount = 0;
-	GameStatistics.LevelDuration = 0;
+	GameStatistics.WaveDuration = 0;
 	GameStatistics.PlayTime = 0;
 }
 
@@ -18,7 +18,7 @@ void USpartaGameInstance::InitializeNewGame()
 	GameStatistics.WaveIndex = 0;
 	GameStatistics.SpawnedCoinCount = 0;
 	GameStatistics.CollectedCoinCount = 0;
-	GameStatistics.LevelDuration = 0;
+	GameStatistics.WaveDuration = 0;
 	GameStatistics.PlayTime = 0;
 }
 

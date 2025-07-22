@@ -14,7 +14,7 @@ struct FGameStatistics
 	int32 WaveIndex = 0;
 	int32 SpawnedCoinCount = 0;
 	int32 CollectedCoinCount = 0;
-	float LevelDuration = 0;
+	float WaveDuration = 0;
 	float PlayTime = 0;
 };
 
@@ -41,7 +41,7 @@ public:
 	int32 GetCollectedCoinCount() const { return GameStatistics.CollectedCoinCount; }
 
 	UFUNCTION(BlueprintPure)
-	float GetTotalLevelDuration() const { return GameStatistics.LevelDuration; }
+	float GetTotalWaveDuration() const { return GameStatistics.WaveDuration; }
 
 	UFUNCTION(BlueprintPure)
 	float GetTotalPlayTime() const { return GameStatistics.PlayTime; }
