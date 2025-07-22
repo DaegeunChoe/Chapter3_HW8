@@ -141,28 +141,6 @@ void ASpartaPlayerController::OnUpdateHealth(float Health, float MaxHealth)
 	}
 }
 
-void ASpartaPlayerController::StartGame()
-{
-	// Called from WBP Blueprint Event Graph
-	USpartaGameInstance* GameInstance = GetGameInstance<USpartaGameInstance>();
-	check(GameInstance);
-
-	GameInstance->InitializeNewGame();
-
-	AGameModeBase* GameModeBase = UGameplayStatics::GetGameMode(this);
-	check(GameModeBase);
-
-	ASpartaGameMode* SpartaGameMode = Cast<ASpartaGameMode>(GameModeBase);
-	check(SpartaGameMode);
-
-	if (SpartaGameMode->MaxLevels > 0)
-	{
-		FName FirstLevelName = SpartaGameMode->LevelInfos[0].MapName;
-		UGameplayStatics::OpenLevel(GetWorld(), FirstLevelName);
-		SetPause(false);
-	}
-}
-
 void ASpartaPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
