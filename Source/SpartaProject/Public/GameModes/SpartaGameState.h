@@ -66,8 +66,9 @@ public:
 
 	bool IsAllCoinCollected() const;
 
-protected:
 	FGameStatistics GameStatistics;
+
+protected:
 	float RemainTime;
 
 	FOnInt32Changed OnScoreChanged;

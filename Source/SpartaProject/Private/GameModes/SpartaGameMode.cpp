@@ -132,7 +132,8 @@ void ASpartaGameMode::EndWave()
 
 	if (IsValid(SpartaGameInstance) && IsValid(SpartaGameState))
 	{
-		// TODO instance 업데이트
+		SpartaGameInstance->UpdateGameStatistics(SpartaGameState->GameStatistics);
+
 		int32 CurrentLevelIndex = SpartaGameState->GetCurrentLevel();
 		int32 NextWaveIndex = SpartaGameState->GetCurrentWave() + 1;
 		SpartaGameState->SetCurrentWave(NextWaveIndex);
@@ -187,6 +188,14 @@ void ASpartaGameMode::OnWaveTimeUp()
 
 void ASpartaGameMode::OnGameOver()
 {
+	USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>();
+	ASpartaGameState* SpartaGameState = GetGameState<ASpartaGameState>();
+
+	if (IsValid(SpartaGameInstance) && IsValid(SpartaGameState))
+	{
+		SpartaGameInstance->UpdateGameStatistics(SpartaGameState->GameStatistics);
+	}
+
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 	if (!IsValid(PC))
 	{

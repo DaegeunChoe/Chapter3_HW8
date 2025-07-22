@@ -46,11 +46,10 @@ public:
 	UFUNCTION(BlueprintPure)
 	float GetTotalPlayTime() const { return GameStatistics.PlayTime; }
 
-	UFUNCTION(BlueprintCallable, Category = "GameData")
-	void AddToScore(int32 Amount);
-
 	UFUNCTION(BlueprintCallable)
 	void SetupNextLevel();
+
+	void UpdateGameStatistics(const FGameStatistics WaveStatistics);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameData")
 	FGameStatistics GameStatistics;

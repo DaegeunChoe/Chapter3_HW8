@@ -75,11 +75,6 @@ void ASpartaGameState::AddScore(int32 Amount)
 {
 	int32 NewScore = GameStatistics.Score + Amount;
 	SetScore(NewScore);
-
-	if (USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>())
-	{
-		SpartaGameInstance->AddToScore(Amount);
-	}
 }
 
 void ASpartaGameState::OnCollectCoin()

@@ -22,12 +22,16 @@ void USpartaGameInstance::InitializeNewGame()
 	GameStatistics.PlayTime = 0;
 }
 
-void USpartaGameInstance::AddToScore(int32 Amount)
-{
-	GameStatistics.Score += Amount;
-}
-
 void USpartaGameInstance::SetupNextLevel()
 {
 	GameStatistics.LevelIndex++;
+}
+
+void USpartaGameInstance::UpdateGameStatistics(const FGameStatistics WaveStatistics)
+{
+	GameStatistics.Score = WaveStatistics.Score; // GameState가 Total Score를 가지고 있음
+	GameStatistics.SpawnedCoinCount += WaveStatistics.SpawnedCoinCount;
+	GameStatistics.CollectedCoinCount += WaveStatistics.CollectedCoinCount;
+	GameStatistics.WaveDuration += WaveStatistics.WaveDuration;
+	GameStatistics.PlayTime += WaveStatistics.PlayTime;
 }
