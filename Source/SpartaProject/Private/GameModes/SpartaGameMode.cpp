@@ -127,11 +127,14 @@ void ASpartaGameMode::EndWave()
 	GetWorldTimerManager().ClearTimer(WaveTimerHandle);
 	GetWorldTimerManager().ClearTimer(RemainTimeUpdateHandle);
 
+
 	USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>();
 	ASpartaGameState* SpartaGameState = GetGameState<ASpartaGameState>();
 
 	if (IsValid(SpartaGameInstance) && IsValid(SpartaGameState))
 	{
+		SpartaGameState->GameStatistics.PlayTime = SpartaGameState->GameStatistics.WaveDuration;
+
 		SpartaGameInstance->UpdateGameStatistics(SpartaGameState->GameStatistics);
 
 		int32 CurrentLevelIndex = SpartaGameState->GetCurrentLevel();

@@ -222,17 +222,29 @@ void ASpartaPlayerController::CreateSetAndAddWidgetToViewport(TSubclassOf<UUserW
 
 void ASpartaPlayerController::SetResultAnimation()
 {
-	//UFunction* PlayAnimFunc = MainMenuWidgetInstance->FindFunction(FName("PlayGameOverAnim"));
-	//if (PlayAnimFunc)
-	//{
-	//	MainMenuWidgetInstance->ProcessEvent(PlayAnimFunc, nullptr);
-	//}
-	//if (UTextBlock* TotalScoreText = Cast<UTextBlock>(MainMenuWidgetInstance->GetWidgetFromName(TEXT("TotalScoreText"))))
-	//{
-	//	if (USpartaGameInstance* GameInstance = GetGameInstance<USpartaGameInstance>())
-	//	{
-	//		int32 TotalScore = GameInstance->GetTotalScore();
-	//		TotalScoreText->SetText(FText::FromString(FString::Printf(TEXT("Total Score: %d"), TotalScore)));
-	//	}
-	//}
+	if (GameOverWidgetInstance)
+	{
+		if (USpartaGameInstance* GameInstance = GetGameInstance<USpartaGameInstance>())
+		{
+			if (UTextBlock* TotalScoreText = Cast<UTextBlock>(GameOverWidgetInstance->GetWidgetFromName(TEXT("TotalScoreText"))))
+			{
+				int32 TotalScore = GameInstance->GetTotalScore();
+				FText NewText = FText::FromString(FString::Printf(TEXT("Total Score: %d"), TotalScore));
+				TotalScoreText->SetText(NewText);
+			}
+			if (UTextBlock* TotalCoinText = Cast<UTextBlock>(GameOverWidgetInstance->GetWidgetFromName(TEXT("TotalCoinText"))))
+			{
+				int32 Spawned = GameInstance->GetSpawnedCoinCount();
+				int32 Collected = GameInstance->GetCollectedCoinCount();
+				FText NewText = FText::FromString(FString::Printf(TEXT("Coins: %d/%d"), Collected, Spawned));
+				TotalCoinText->SetText(NewText);
+			}
+			if (UTextBlock* TotalPlayTimeText = Cast<UTextBlock>(GameOverWidgetInstance->GetWidgetFromName(TEXT("TotalPlayTimeText"))))
+			{
+				float  TotalPlayTime = GameInstance->GetTotalPlayTime();
+				FText NewText = FText::FromString(FString::Printf(TEXT("PlayTime: %.2f"), TotalPlayTime));
+				TotalPlayTimeText->SetText(NewText);
+			}
+		}
+	}
 }
