@@ -25,9 +25,10 @@ class SPARTAPROJECT_API USpartaGameInstance : public UGameInstance
 
 public:
 	USpartaGameInstance();
-
+	
+	UFUNCTION(BlueprintCallable)
 	void InitializeNewGame();
-
+	
 	UFUNCTION(BlueprintPure)
 	int32 GetCurrentLevelIndex() const { return GameStatistics.LevelIndex; }
 
