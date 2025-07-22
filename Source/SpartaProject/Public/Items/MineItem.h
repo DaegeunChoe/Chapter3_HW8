@@ -13,9 +13,11 @@ class SPARTAPROJECT_API AMineItem : public ABaseItem
 	
 public:
 	AMineItem();
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 protected:
 	virtual void ActivateItem(AActor* Activator) override;
+	virtual void DestroyItem() override;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Item")
 	float ExplosionDelay;
@@ -36,8 +38,11 @@ protected:
 	TObjectPtr<USoundBase> ExplosionSound;
 
 	FTimerHandle ExplosionTimerHandle;
-
+	
 	void Explode();
-
 	bool bHasExploded;
+	
+	FTimerHandle DestroyExplodedParticleTimerHandle;
+	UParticleSystemComponent* ExplodedParticle;
+	void RemoveExplodedParticle();
 };

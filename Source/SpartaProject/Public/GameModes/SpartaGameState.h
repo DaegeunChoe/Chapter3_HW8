@@ -2,12 +2,14 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameState.h"
+#include "SpartaGameInstance.h"
 #include "SpartaGameState.generated.h"
 
 struct FGameStatistics;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnInt32Changed, int32, NewValue);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFloatChanged, float, NewValue);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTwoInt32Changed, int32, NewValue0, int32, NewValue1);
 
 UCLASS()
 class SPARTAPROJECT_API ASpartaGameState : public AGameState
@@ -22,16 +24,19 @@ public:
 	void SetCurrentLevelInfo(FGameStatistics GameStatistics);
 
 	UFUNCTION(BlueprintPure)
-	int32 GetScore() const { return Score; }
+	int32 GetScore() const { return GameStatistics.Score; }
 
 	UFUNCTION(BlueprintPure)
-	int32 GetCurrentLevel() const { return CurrentLevel; }
+	int32 GetCurrentLevel() const { return GameStatistics.LevelIndex; }
 
 	UFUNCTION(BlueprintPure)
-	int32 GetSpawnCoinCount() const { return SpawnCoinCount; }
+	int32 GetCurrentWave() const { return GameStatistics.WaveIndex; }
 
 	UFUNCTION(BlueprintPure)
-	int32 GetCollectedCoinCount() const { return CollectedCoinCount; }
+	int32 GetSpawnCoinCount() const { return GameStatistics.SpawnedCoinCount; }
+
+	UFUNCTION(BlueprintPure)
+	int32 GetCollectedCoinCount() const { return GameStatistics.CollectedCoinCount; }
 
 	UFUNCTION(BlueprintPure)
 	float GetRemainTime() const { return RemainTime; }
@@ -41,6 +46,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetCurrentLevel(int32 NewValue);
+
+	UFUNCTION(BlueprintCallable)
+	void SetCurrentWave(int32 NewValue);
 
 	UFUNCTION(BlueprintCallable)
 	void SetSpawnCoinCount(int32 NewValue);
@@ -58,15 +66,13 @@ public:
 
 	bool IsAllCoinCollected() const;
 
+	FGameStatistics GameStatistics;
+
 protected:
-	int32 Score;
-	int32 CurrentLevel;
-	int32 SpawnCoinCount;
-	int32 CollectedCoinCount;
 	float RemainTime;
 
 	FOnInt32Changed OnScoreChanged;
-	FOnInt32Changed OnLevelChanged;
+	FOnTwoInt32Changed OnLevelWaveChanged;
 	FOnInt32Changed OnSpawnCoinCountChanged;
 	FOnInt32Changed OnCollectedCoinCountChanged;
 	FOnFloatChanged OnRemainTimeChanged;

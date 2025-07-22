@@ -9,12 +9,13 @@ struct FGameStatistics
 {
 	GENERATED_BODY()
 
-	int32 Score;
-	int32 LevelIndex;
-	int32 SpawnedCoinCount;
-	int32 CollectedCoinCount;
-	float LevelDuration;
-	float PlayTime;
+	int32 Score = 0;
+	int32 LevelIndex = 0;
+	int32 WaveIndex = 0;
+	int32 SpawnedCoinCount = 0;
+	int32 CollectedCoinCount = 0;
+	float WaveDuration = 0;
+	float PlayTime = 0;
 };
 
 UCLASS()
@@ -40,16 +41,15 @@ public:
 	int32 GetCollectedCoinCount() const { return GameStatistics.CollectedCoinCount; }
 
 	UFUNCTION(BlueprintPure)
-	float GetTotalLevelDuration() const { return GameStatistics.LevelDuration; }
+	float GetTotalWaveDuration() const { return GameStatistics.WaveDuration; }
 
 	UFUNCTION(BlueprintPure)
 	float GetTotalPlayTime() const { return GameStatistics.PlayTime; }
 
-	UFUNCTION(BlueprintCallable, Category = "GameData")
-	void AddToScore(int32 Amount);
-
 	UFUNCTION(BlueprintCallable)
 	void SetupNextLevel();
+
+	void UpdateGameStatistics(const FGameStatistics WaveStatistics);
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite, Category = "GameData")
 	FGameStatistics GameStatistics;

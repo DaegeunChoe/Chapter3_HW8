@@ -40,69 +40,24 @@ void ASpartaGameMode::BeginPlay()
 	Super::BeginPlay();
 	
 	MaxLevels = LevelInfos.Num();
-	if (MaxLevels > 0)
+
+	FString CurrentMapName = GetWorld()->GetMapName();
+	if (!CurrentMapName.Contains(TEXT("MenuLevel")))
 	{
-		StartLevel();
+		if (MaxLevels > 0)
+		{
+			StartLevel();
+		}
 	}
 }
 
 void ASpartaGameMode::StartLevel()
 {
-	USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>();
-	if (SpartaGameInstance == nullptr)
-	{
-		return;
-	}
-
-	TArray<AActor*> FoundVolumes;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
-
-	const int32 TotalScsore = SpartaGameInstance->GetTotalScore();
-	const int32 CurrentLevelIndex = SpartaGameInstance->GetCurrentLevelIndex();
-	const int32 ItemToSpawn = LevelInfos[CurrentLevelIndex].ItemToSpawn;
-	const float LevelDuration = LevelInfos[CurrentLevelIndex].Duration;
-
-	int32 SpawnCoinCount = 0;
-	for (int32 n = 0; n < ItemToSpawn; n++)
-	{
-		if (FoundVolumes.Num() > 0)
-		{
-			if (ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[0]))
-			{
-				ABaseItem* SpawnedItem = SpawnVolume->SpawnRandomItem();
-				if (IsValid(SpawnedItem) && SpawnedItem->IsA(ACoinItem::StaticClass()))
-				{
-					SpawnCoinCount++;
-				}
-			}
-		}
-	}
-
-	GetWorldTimerManager().SetTimer(LevelTimerHandle, this, &ASpartaGameMode::OnLevelTimeUp, LevelDuration, false);
-	GetWorldTimerManager().SetTimer(RemainTimeUpdateHandle, this, &ThisClass::UpdateRemainTime, 0.1f, true);
-
-	ASpartaGameState* SpartaGameState = GetGameState<ASpartaGameState>();
-	if (IsValid(SpartaGameState))
-	{
-		GetWorldTimerManager().SetTimerForNextTick([SpartaGameState, TotalScsore, CurrentLevelIndex, SpawnCoinCount, LevelDuration]()
-			{
-				FGameStatistics NewGameStatistics;
-				NewGameStatistics.Score = TotalScsore;
-				NewGameStatistics.LevelIndex = CurrentLevelIndex;
-				NewGameStatistics.SpawnedCoinCount = SpawnCoinCount;
-				NewGameStatistics.CollectedCoinCount = 0;
-				NewGameStatistics.LevelDuration = LevelDuration;
-				NewGameStatistics.PlayTime = 0;
-				SpartaGameState->SetCurrentLevelInfo(NewGameStatistics);
-			});
-	}
+	StartWave();
 }
 
 void ASpartaGameMode::EndLevel()
 {
-	GetWorldTimerManager().ClearTimer(LevelTimerHandle);
-	GetWorldTimerManager().ClearTimer(RemainTimeUpdateHandle);
-
 	USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>();
 	ASpartaGameState* SpartaGameState = GetGameState<ASpartaGameState>();
 
@@ -125,13 +80,122 @@ void ASpartaGameMode::EndLevel()
 	}
 }
 
-void ASpartaGameMode::OnLevelTimeUp()
+void ASpartaGameMode::StartWave()
 {
-	EndLevel();
+	USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>();
+	if (SpartaGameInstance == nullptr)
+	{
+		return;
+	}
+
+	ASpartaGameState* SpartaGameState = GetGameState<ASpartaGameState>();
+	if (!IsValid(SpartaGameState))
+	{
+		return;
+	}
+
+	const int32 TotalScsore = SpartaGameInstance->GetTotalScore();
+	const int32 CurrentLevelIndex = SpartaGameInstance->GetCurrentLevelIndex();
+	const int32 CurrentWaveIndex = SpartaGameState->GetCurrentWave();
+
+	const int32 ItemToSpawn = LevelInfos[CurrentLevelIndex].Waves[CurrentWaveIndex].ItemToSpawn;
+	const float WaveDuration = LevelInfos[CurrentLevelIndex].Waves[CurrentWaveIndex].Duration;
+
+	int32 SpawnCoinCount = 0;
+	SpawnItems(ItemToSpawn, SpawnCoinCount);
+
+	GetWorldTimerManager().SetTimer(WaveTimerHandle, this, &ASpartaGameMode::OnWaveTimeUp, WaveDuration, false);
+	GetWorldTimerManager().SetTimer(RemainTimeUpdateHandle, this, &ThisClass::UpdateRemainTime, 0.1f, true);
+
+	GetWorldTimerManager().SetTimerForNextTick(
+		[SpartaGameState, TotalScsore, CurrentLevelIndex, CurrentWaveIndex, SpawnCoinCount, WaveDuration]()
+		{
+			FGameStatistics NewGameStatistics;
+			NewGameStatistics.Score = TotalScsore;
+			NewGameStatistics.LevelIndex = CurrentLevelIndex;
+			NewGameStatistics.WaveIndex = CurrentWaveIndex;
+			NewGameStatistics.SpawnedCoinCount = SpawnCoinCount;
+			NewGameStatistics.CollectedCoinCount = 0;
+			NewGameStatistics.WaveDuration = WaveDuration;
+			NewGameStatistics.PlayTime = 0;
+			SpartaGameState->SetCurrentLevelInfo(NewGameStatistics);
+		});
+}
+
+void ASpartaGameMode::EndWave()
+{
+	GetWorldTimerManager().ClearTimer(WaveTimerHandle);
+	GetWorldTimerManager().ClearTimer(RemainTimeUpdateHandle);
+
+	USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>();
+	ASpartaGameState* SpartaGameState = GetGameState<ASpartaGameState>();
+
+	if (IsValid(SpartaGameInstance) && IsValid(SpartaGameState))
+	{
+		SpartaGameInstance->UpdateGameStatistics(SpartaGameState->GameStatistics);
+
+		int32 CurrentLevelIndex = SpartaGameState->GetCurrentLevel();
+		int32 NextWaveIndex = SpartaGameState->GetCurrentWave() + 1;
+		SpartaGameState->SetCurrentWave(NextWaveIndex);
+		if (LevelInfos.IsValidIndex(CurrentLevelIndex) && LevelInfos[CurrentLevelIndex].Waves.IsValidIndex(NextWaveIndex))
+		{
+			ClearWave();
+			StartWave();
+		}
+		else 
+		{
+			EndLevel();
+		}
+	}
+}
+
+void ASpartaGameMode::SpawnItems(int32 ItemToSpawn, int32& SpawnCoinCount)
+{
+	TArray<AActor*> FoundVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
+
+	for (int32 n = 0; n < ItemToSpawn; n++)
+	{
+		if (FoundVolumes.Num() > 0)
+		{
+			if (ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[0]))
+			{
+				ABaseItem* SpawnedItem = SpawnVolume->SpawnRandomItem();
+				if (IsValid(SpawnedItem) && SpawnedItem->IsA(ACoinItem::StaticClass()))
+				{
+					SpawnCoinCount++;
+				}
+			}
+		}
+	}
+}
+
+void ASpartaGameMode::ClearWave()
+{
+	TArray<AActor*> FoundItems;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABaseItem::StaticClass(), FoundItems);
+
+	for (int32 n = 0; n < FoundItems.Num(); n++)
+	{
+		FoundItems[n]->Destroy();
+	}
+}
+
+void ASpartaGameMode::OnWaveTimeUp()
+{
+	EndWave();
 }
 
 void ASpartaGameMode::OnGameOver()
 {
+	USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>();
+	ASpartaGameState* SpartaGameState = GetGameState<ASpartaGameState>();
+
+	if (IsValid(SpartaGameInstance) && IsValid(SpartaGameState))
+	{
+		SpartaGameInstance->UpdateGameStatistics(SpartaGameState->GameStatistics);
+	}
+
 	APlayerController* PC = GetWorld()->GetFirstPlayerController();
 	if (!IsValid(PC))
 	{
@@ -152,7 +216,7 @@ void ASpartaGameMode::UpdateRemainTime()
 	{
 		if (RemainTimeUpdateHandle.IsValid())
 		{
-			float RemainingTime = GetWorldTimerManager().GetTimerRemaining(LevelTimerHandle);
+			float RemainingTime = GetWorldTimerManager().GetTimerRemaining(WaveTimerHandle);
 			SpartaGameState->SetRemainTime(RemainingTime);
 		}
 		

@@ -33,7 +33,7 @@ public:
 	void OnUpdateRemainTime(float NewRemainTime);
 
 	UFUNCTION()
-	void OnUpdateLevel(int32 NewLevel);
+	void OnUpdateLevelWave(int32 NewLevel, int32 NewWave);
 
 	UFUNCTION(BlueprintCallable, Category = "Menu")
 	void StartGame();

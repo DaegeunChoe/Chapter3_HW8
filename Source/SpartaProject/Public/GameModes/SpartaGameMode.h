@@ -8,6 +8,22 @@ class UGameInstance;
 class ASpartaCharacter;
 
 USTRUCT(BlueprintType)
+struct FWaveInfo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float Duration = 30.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int32 ItemToSpawn = 40;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FName> FeaturesToActive;
+};
+
+USTRUCT(BlueprintType)
 struct FLevelInfo
 {
 	GENERATED_BODY()
@@ -17,10 +33,7 @@ public:
 	FName MapName;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Duration = 30.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 ItemToSpawn = 40;
+	TArray<FWaveInfo> Waves;
 };
 
 UCLASS()
@@ -45,10 +58,15 @@ protected:
 
 	void StartLevel();
 	void EndLevel();
-	void OnLevelTimeUp();
+	void StartWave();
+	void EndWave();
+	void OnWaveTimeUp();
 	void OnGameOver();
 	void UpdateRemainTime();
 
-	FTimerHandle LevelTimerHandle;
+	void SpawnItems(int32 ItemToSpawn, int32& SpawnCoinCount);
+	void ClearWave();
+
+	FTimerHandle WaveTimerHandle;
 	FTimerHandle RemainTimeUpdateHandle;
 };

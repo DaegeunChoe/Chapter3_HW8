@@ -10,10 +10,6 @@
 
 ASpartaGameState::ASpartaGameState()
 {
-	Score = 0;
-	CurrentLevel = 0;
-	SpawnCoinCount = 0;
-	CollectedCoinCount = 0;
 	RemainTime = 0.0f;
 }
 
@@ -29,37 +25,44 @@ void ASpartaGameState::EndPlay(EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void ASpartaGameState::SetCurrentLevelInfo(FGameStatistics GameStatistics)
+void ASpartaGameState::SetCurrentLevelInfo(FGameStatistics NewGameStatistics)
 {
-	SetScore(GameStatistics.Score);
-	SetCurrentLevel(GameStatistics.LevelIndex);
-	SetSpawnCoinCount(GameStatistics.SpawnedCoinCount);
-	SetCollectedCoinCount(GameStatistics.CollectedCoinCount);
-	SetRemainTime(GameStatistics.LevelDuration);
+	SetScore(NewGameStatistics.Score);
+	SetCurrentLevel(NewGameStatistics.LevelIndex);
+	SetCurrentWave(NewGameStatistics.WaveIndex);
+	SetSpawnCoinCount(NewGameStatistics.SpawnedCoinCount);
+	SetCollectedCoinCount(NewGameStatistics.CollectedCoinCount);
+	SetRemainTime(NewGameStatistics.WaveDuration);
 }
 
 void ASpartaGameState::SetScore(int32 NewValue)
 {
-	Score = NewValue;
-	OnScoreChanged.Broadcast(Score);
+	GameStatistics.Score = NewValue;
+	OnScoreChanged.Broadcast(NewValue);
 }
 
 void ASpartaGameState::SetCurrentLevel(int32 NewValue)
 {
-	CurrentLevel = NewValue;
-	OnLevelChanged.Broadcast(CurrentLevel);
+	GameStatistics.LevelIndex = NewValue;
+	OnLevelWaveChanged.Broadcast(NewValue, GameStatistics.WaveIndex);
+}
+
+void ASpartaGameState::SetCurrentWave(int32 NewValue)
+{
+	GameStatistics.WaveIndex = NewValue;
+	OnLevelWaveChanged.Broadcast(GameStatistics.LevelIndex, NewValue);
 }
 
 void ASpartaGameState::SetSpawnCoinCount(int32 NewValue)
 {
-	SpawnCoinCount = NewValue;
-	OnSpawnCoinCountChanged.Broadcast(SpawnCoinCount);
+	GameStatistics.SpawnedCoinCount = NewValue;
+	OnSpawnCoinCountChanged.Broadcast(NewValue);
 }
 
 void ASpartaGameState::SetCollectedCoinCount(int32 NewValue)
 {
-	CollectedCoinCount = NewValue;
-	OnCollectedCoinCountChanged.Broadcast(CollectedCoinCount);
+	GameStatistics.CollectedCoinCount = NewValue;
+	OnCollectedCoinCountChanged.Broadcast(NewValue);
 }
 
 void ASpartaGameState::SetRemainTime(float NewValue)
@@ -70,26 +73,19 @@ void ASpartaGameState::SetRemainTime(float NewValue)
 
 void ASpartaGameState::AddScore(int32 Amount)
 {
-	int32 NewScore = Score + Amount;
+	int32 NewScore = GameStatistics.Score + Amount;
 	SetScore(NewScore);
-
-	if (USpartaGameInstance* SpartaGameInstance = GetGameInstance<USpartaGameInstance>())
-	{
-		SpartaGameInstance->AddToScore(Amount);
-	}
 }
 
 void ASpartaGameState::OnCollectCoin()
 {
-	int32 Increased = CollectedCoinCount + 1;
+	int32 Increased = GameStatistics.CollectedCoinCount + 1;
 	SetCollectedCoinCount(Increased);
-
-	UE_LOG(LogTemp, Warning, TEXT("OnCoinCollected %d/%d"), CollectedCoinCount, SpawnCoinCount);
 }
 
 bool ASpartaGameState::IsAllCoinCollected() const
 {
-	return (SpawnCoinCount > 0) && (CollectedCoinCount >= SpawnCoinCount);
+	return (GameStatistics.SpawnedCoinCount > 0) && (GameStatistics.CollectedCoinCount >= GameStatistics.SpawnedCoinCount);
 }
 
 void ASpartaGameState::RegisterDelegates()
@@ -101,7 +97,7 @@ void ASpartaGameState::RegisterDelegates()
 	check(SpartaPC);
 
 	OnScoreChanged.AddDynamic(SpartaPC, &ASpartaPlayerController::OnUpdateScore);
-	OnLevelChanged.AddDynamic(SpartaPC, &ASpartaPlayerController::OnUpdateLevel);
+	OnLevelWaveChanged.AddDynamic(SpartaPC, &ASpartaPlayerController::OnUpdateLevelWave);
 	//OnSpawnCoinCountChanged.AddDynamic(SpartaPC, &ASpartaPlayerController::OnUpdateScore);
 	//OnCollectedCoinCountChanged.AddDynamic(SpartaPC, &ASpartaPlayerController::OnUpdateScore);
 	OnRemainTimeChanged.AddDynamic(SpartaPC, &ASpartaPlayerController::OnUpdateRemainTime);
@@ -110,7 +106,7 @@ void ASpartaGameState::RegisterDelegates()
 void ASpartaGameState::UnregisterDelegates()
 {
 	OnScoreChanged.Clear();
-	OnLevelChanged.Clear();
+	OnLevelWaveChanged.Clear();
 	OnSpawnCoinCountChanged.Clear();
 	OnCollectedCoinCountChanged.Clear();
 	OnRemainTimeChanged.Clear();

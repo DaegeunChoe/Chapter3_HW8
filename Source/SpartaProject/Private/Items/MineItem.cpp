@@ -17,6 +17,16 @@ AMineItem::AMineItem()
 	ExplosionCollision->SetupAttachment(SceneComp);
 }
 
+void AMineItem::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	if (DestroyExplodedParticleTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DestroyExplodedParticleTimerHandle);
+	}
+	RemoveExplodedParticle();
+	Super::EndPlay(EndPlayReason);
+}
+
 void AMineItem::ActivateItem(AActor* Activator)
 {
 	if (bHasExploded)
@@ -30,12 +40,20 @@ void AMineItem::ActivateItem(AActor* Activator)
 		ExplosionTimerHandle, this, &AMineItem::Explode, ExplosionDelay, false);
 }
 
+void AMineItem::DestroyItem()
+{
+	if (ExplosionTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(ExplosionTimerHandle);
+	}
+	Super::DestroyItem();
+}
+
 void AMineItem::Explode()
 {
-	UParticleSystemComponent* Particle = nullptr;
 	if (ExplosionParticle)
 	{
-		Particle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticle, GetActorLocation(), GetActorRotation(), false);
+		ExplodedParticle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ExplosionParticle, GetActorLocation(), GetActorRotation(), false);
 	}
 	if (ExplosionSound)
 	{
@@ -54,14 +72,20 @@ void AMineItem::Explode()
 	}
 	DestroyItem();
 
-	if (Particle)
+	if (ExplodedParticle)
 	{
-		FTimerHandle DestroyParticleTimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(
-			DestroyParticleTimerHandle, 
-			[Particle]() {
-				Particle->DestroyComponent();
-			}, 2.0f, false
+			DestroyExplodedParticleTimerHandle,
+			this, &AMineItem::RemoveExplodedParticle, 2.0f, false
 		);
 	}
 }
+
+void AMineItem::RemoveExplodedParticle()
+{
+	if (ExplodedParticle)
+	{
+		ExplodedParticle->DestroyComponent();
+	}
+}
+
