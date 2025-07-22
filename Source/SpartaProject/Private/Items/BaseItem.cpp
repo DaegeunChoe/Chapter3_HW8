@@ -21,6 +21,15 @@ ABaseItem::ABaseItem()
 	Collision->OnComponentEndOverlap.AddDynamic(this, &ABaseItem::OnItemEndOverlap);
 }
 
+void ABaseItem::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	if (DestroyParticleTimerHandle.IsValid())
+	{
+		GetWorld()->GetTimerManager().ClearTimer(DestroyParticleTimerHandle);
+	}
+	DestroyItem();
+}
+
 void ABaseItem::OnItemBeginOverlap(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (IsValid(OtherActor) && OtherActor->ActorHasTag(TEXT("Player")))
@@ -35,7 +44,6 @@ void ABaseItem::OnItemEndOverlap(UPrimitiveComponent* OverlappedComp, AActor* Ot
 
 void ABaseItem::ActivateItem(AActor* Activator)
 {
-	UParticleSystemComponent* Particle = nullptr;
 	if (PickupParticle)
 	{
 		Particle = UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), PickupParticle, GetActorLocation(), GetActorRotation(), true);
@@ -47,12 +55,9 @@ void ABaseItem::ActivateItem(AActor* Activator)
 
 	if (Particle)
 	{
-		FTimerHandle DestroyParticleTimerHandle;
 		GetWorld()->GetTimerManager().SetTimer(
 			DestroyParticleTimerHandle,
-			[Particle]() {
-				Particle->DestroyComponent();
-			}, 2.0f, false
+			this, &ABaseItem::RemoveParticle, 2.0f, false
 		);
 	}
 }
@@ -65,4 +70,12 @@ FName ABaseItem::GetItemType() const
 void ABaseItem::DestroyItem()
 {
 	Destroy();
+}
+
+void ABaseItem::RemoveParticle()
+{
+	if (Particle)
+	{
+		Particle->DestroyComponent();
+	}
 }
