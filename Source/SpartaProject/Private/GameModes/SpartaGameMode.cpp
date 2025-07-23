@@ -29,7 +29,7 @@ void ASpartaGameMode::CollectCoinAndAddScore(int32 CoinPoint)
 
 		if (SpartaGameState->IsAllCoinCollected())
 		{
-			EndLevel();
+			EndWave();
 		}
 	}
 }
