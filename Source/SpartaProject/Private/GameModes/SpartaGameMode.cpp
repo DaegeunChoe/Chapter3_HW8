@@ -103,6 +103,7 @@ void ASpartaGameMode::StartWave()
 
 	int32 SpawnCoinCount = 0;
 	SpawnItems(ItemToSpawn, SpawnCoinCount);
+	ActivateWaveFeatures(LevelInfos[CurrentLevelIndex].Waves[CurrentWaveIndex].FeaturesToActive);
 
 	GetWorldTimerManager().SetTimer(WaveTimerHandle, this, &ASpartaGameMode::OnWaveTimeUp, WaveDuration, false);
 	GetWorldTimerManager().SetTimer(RemainTimeUpdateHandle, this, &ThisClass::UpdateRemainTime, 0.1f, true);
@@ -182,6 +183,39 @@ void ASpartaGameMode::ClearWave()
 	{
 		FoundItems[n]->Destroy();
 	}
+}
+
+void ASpartaGameMode::ActivateWaveFeatures(TArray<FName> Features)
+{
+	if (Features.Contains(FName(TEXT("Spike"))))
+	{
+		SpawnSpike(10);
+	}
+	if (Features.Contains(FName(TEXT("Explosion"))))
+	{
+
+	}
+}
+
+void ASpartaGameMode::SpawnSpike(int32 ItemToSpawn)
+{
+	TArray<AActor*> FoundVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
+
+	for (int32 n = 0; n < ItemToSpawn; n++)
+	{
+		if (FoundVolumes.Num() > 0)
+		{
+			if (ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[0]))
+			{
+				ABaseItem* SpawnedItem = SpawnVolume->SpawnSpikeItem();
+			}
+		}
+	}
+}
+
+void ASpartaGameMode::SpawnExplosion()
+{
 }
 
 void ASpartaGameMode::OnWaveTimeUp()

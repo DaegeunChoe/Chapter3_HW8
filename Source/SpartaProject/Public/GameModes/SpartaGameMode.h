@@ -66,6 +66,10 @@ protected:
 
 	void SpawnItems(int32 ItemToSpawn, int32& SpawnCoinCount);
 	void ClearWave();
+	void ActivateWaveFeatures(TArray<FName> Features);
+
+	void SpawnSpike(int32 ItemToSpawn);
+	void SpawnExplosion();
 
 	FTimerHandle WaveTimerHandle;
 	FTimerHandle RemainTimeUpdateHandle;
