@@ -30,6 +30,9 @@ public:
 	void ShowGameOver();
 
 	UFUNCTION()
+	void OnChangedWaveFeatures(FString FeatureString);
+
+	UFUNCTION()
 	void OnUpdateScore(int32 NewScore);
 
 	UFUNCTION()

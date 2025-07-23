@@ -187,13 +187,23 @@ void ASpartaGameMode::ClearWave()
 
 void ASpartaGameMode::ActivateWaveFeatures(TArray<FName> Features)
 {
+	FString FeatureString(TEXT(""));
 	if (Features.Contains(FName(TEXT("Spike"))))
 	{
 		SpawnSpike(10);
+		FeatureString += "Activate Spike!\n";
 	}
 	if (Features.Contains(FName(TEXT("Explosion"))))
 	{
+		FeatureString += "Activate Explosion!\n";
+	}
 
+	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+	{
+		if (ASpartaPlayerController* SpartaPC = Cast<ASpartaPlayerController>(PC))
+		{
+			SpartaPC->OnChangedWaveFeatures(FeatureString);
+		}
 	}
 }
 
