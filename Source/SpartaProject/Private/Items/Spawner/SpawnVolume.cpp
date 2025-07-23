@@ -44,6 +44,18 @@ ABaseItem* ASpawnVolume::SpawnSpikeItem()
 	}
 }
 
+ABaseItem* ASpawnVolume::SpawnExplosion()
+{
+	if (ExplosionClass != nullptr)
+	{
+		return GetWorld()->SpawnActor<ABaseItem>(ExplosionClass, GetRandomPointInVolume(), FRotator::ZeroRotator);
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
 ABaseItem* ASpawnVolume::SpawnItem(TSubclassOf<ABaseItem> ItemClass)
 {
 	if (ItemClass == nullptr)

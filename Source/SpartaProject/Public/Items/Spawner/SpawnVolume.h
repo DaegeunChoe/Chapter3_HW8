@@ -22,6 +22,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ABaseItem* SpawnSpikeItem();
 
+	UFUNCTION(BlueprintCallable)
+	ABaseItem* SpawnExplosion();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
 	TObjectPtr<UDataTable> ItemDataTable;
 
@@ -39,4 +42,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawning")
 	TSubclassOf<ABaseItem> SpikeItemClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawning")
+	TSubclassOf<ABaseItem> ExplosionClass;
 };

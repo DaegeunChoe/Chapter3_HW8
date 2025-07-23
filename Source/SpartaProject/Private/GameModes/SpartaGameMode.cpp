@@ -51,6 +51,15 @@ void ASpartaGameMode::BeginPlay()
 	}
 }
 
+void ASpartaGameMode::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	if (ExplosionTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(ExplosionTimerHandle);
+	}
+	Super::EndPlay(EndPlayReason);
+}
+
 void ASpartaGameMode::StartLevel()
 {
 	StartWave();
@@ -195,6 +204,7 @@ void ASpartaGameMode::ActivateWaveFeatures(TArray<FName> Features)
 	}
 	if (Features.Contains(FName(TEXT("Explosion"))))
 	{
+		StartSpawnExplosion();
 		FeatureString += "Activate Explosion!\n";
 	}
 
@@ -226,6 +236,25 @@ void ASpartaGameMode::SpawnSpike(int32 ItemToSpawn)
 
 void ASpartaGameMode::SpawnExplosion()
 {
+	TArray<AActor*> FoundVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
+
+	for (int32 n = 0; n < 4; n++)
+	{
+		if (FoundVolumes.Num() > 0)
+		{
+			if (ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[0]))
+			{
+				ABaseItem* SpawnedItem = SpawnVolume->SpawnExplosion();
+			}
+		}
+	}
+}
+
+void ASpartaGameMode::StartSpawnExplosion()
+{
+
+	GetWorldTimerManager().SetTimer(ExplosionTimerHandle, this, &ASpartaGameMode::SpawnExplosion, 4.0f, true);
 }
 
 void ASpartaGameMode::OnWaveTimeUp()

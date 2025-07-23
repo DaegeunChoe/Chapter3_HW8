@@ -55,6 +55,7 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	void StartLevel();
 	void EndLevel();
@@ -70,7 +71,9 @@ protected:
 
 	void SpawnSpike(int32 ItemToSpawn);
 	void SpawnExplosion();
+	void StartSpawnExplosion();
 
 	FTimerHandle WaveTimerHandle;
 	FTimerHandle RemainTimeUpdateHandle;
+	FTimerHandle ExplosionTimerHandle;
 };
