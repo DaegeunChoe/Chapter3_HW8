@@ -9,6 +9,19 @@ class UCameraComponent;
 class UWidgetComponent;
 struct FInputActionValue;
 
+typedef TFunction<void()> CharacterAffectFunction;
+
+struct CharacterEffect
+{
+	CharacterEffect(
+		CharacterAffectFunction& Commit, CharacterAffectFunction& Revert, FTimerHandle Handle)
+		: Commit(Commit), Revert(Revert), Handle(Handle) {};
+
+	CharacterAffectFunction& Commit;
+	CharacterAffectFunction& Revert;
+	FTimerHandle Handle;
+};
+
 UCLASS()
 class SPARTAPROJECT_API ASpartaCharacter : public ACharacter
 {
@@ -23,8 +36,15 @@ public:
 	virtual float TakeDamage(float DamageAmount, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
 	virtual void AddHealth(float Amout);
 
+	void AddTimerEffect(FName EffectName, float Duration, CharacterAffectFunction Commit, CharacterAffectFunction Revert);
+	bool HasTimerEffect(FName EffectName);
+
+	float GetNormalSpeed() const { return NormalSpeed; }
+	void SetNormalSpeed(float NewValue);
+
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 	virtual void Tick(float DeltaTime) override;
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	virtual void OnDeath();
@@ -67,4 +87,6 @@ protected:
 
 	float NormalSpeed;
 	float SprintSpeedMultiplier;
+
+	TMap<FName, CharacterEffect> Effects;
 };

@@ -47,6 +47,17 @@ void ASpartaCharacter::BeginPlay()
 	UpdateHPWidget();
 }
 
+void ASpartaCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	for (auto& Effect : Effects)
+	{
+		if (Effect.Value.Handle.IsValid())
+		{
+			GetWorldTimerManager().ClearTimer(Effect.Value.Handle);
+		}
+	}
+}
+
 void ASpartaCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -218,5 +229,45 @@ void ASpartaCharacter::UpdateHPWidget()
 	if (ASpartaPlayerController* PC = GetController<ASpartaPlayerController>())
 	{
 		PC->OnUpdateHealth(Health, MaxHealth);
+	}
+}
+
+void ASpartaCharacter::AddTimerEffect(FName EffectName, float Duration, CharacterAffectFunction Commit, CharacterAffectFunction Revert)
+{
+	if (Effects.Contains(EffectName))
+	{
+		FTimerHandle& OldHandle = Effects[EffectName].Handle;
+		if (OldHandle.IsValid() && GetWorldTimerManager().IsTimerActive(OldHandle))
+		{
+			Effects[EffectName].Revert();
+			GetWorldTimerManager().ClearTimer(OldHandle);
+		}
+	}
+
+	Commit();
+	FTimerHandle NewHandle;
+	GetWorldTimerManager().SetTimer(NewHandle, [Revert]() {Revert();}, Duration, false);
+	CharacterEffect NewEffect(Commit, Revert, NewHandle);
+	Effects.Emplace(EffectName, NewEffect);
+}
+
+bool ASpartaCharacter::HasTimerEffect(FName EffectName)
+{
+	if (Effects.Contains(EffectName))
+	{
+		return Effects[EffectName].Handle.IsValid();
+	}
+	else
+	{
+		return false;
+	}
+}
+
+void ASpartaCharacter::SetNormalSpeed(float NewValue)
+{
+	NormalSpeed = NewValue;
+	if (GetCharacterMovement())
+	{
+		GetCharacterMovement()->MaxWalkSpeed = NormalSpeed;
 	}
 }

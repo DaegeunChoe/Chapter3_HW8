@@ -26,3 +26,23 @@ void UHealCharacterMethod::Affect(AActor* Causer, ACharacter* Target)
 		SpartaCharacter->AddHealth(Amount);
 	}
 }
+
+void USpeedChangeShortlyCharacterMethod::Affect(AActor* Causer, ACharacter* Target)
+{
+	if (ASpartaCharacter* SpartaCharacter = Cast<ASpartaCharacter>(Target))
+	{
+		SpartaCharacter->AddTimerEffect(FName(TEXT("SpeedUp")), Duration,
+			[SpartaCharacter, this]()
+			{
+				float OldSpeed = SpartaCharacter->GetNormalSpeed();
+				float NewSpeed = OldSpeed + Amount;
+				SpartaCharacter->SetNormalSpeed(NewSpeed);
+			},
+			[SpartaCharacter, this]()
+			{
+				float OldSpeed = SpartaCharacter->GetNormalSpeed();
+				float NewSpeed = OldSpeed - Amount;
+				SpartaCharacter->SetNormalSpeed(NewSpeed);
+			});
+	}
+}

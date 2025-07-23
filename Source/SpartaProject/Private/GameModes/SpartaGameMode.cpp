@@ -45,7 +45,8 @@ void ASpartaGameMode::BeginPlay()
 	{
 		if (MaxLevels > 0)
 		{
-			StartLevel();
+			GetWorldTimerManager().SetTimerForNextTick([this]() { StartLevel(); });
+			//StartLevel();
 		}
 	}
 }

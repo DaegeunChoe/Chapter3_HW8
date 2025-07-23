@@ -35,6 +35,18 @@ public:
 };
 
 UCLASS()
+class USpeedChangeShortlyCharacterMethod : public UAffectCharacterMethod
+{
+	GENERATED_BODY()
+
+public:
+	virtual void Affect(AActor* Causer, ACharacter* Target) override;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly);
+	float Duration;
+};
+
+UCLASS()
 class UItemFragment_AffectCharacter : public UItemFragment
 {
 	GENERATED_BODY()
