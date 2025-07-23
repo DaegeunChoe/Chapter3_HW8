@@ -107,6 +107,8 @@ void ASpartaGameMode::StartWave()
 	const int32 CurrentLevelIndex = SpartaGameInstance->GetCurrentLevelIndex();
 	const int32 CurrentWaveIndex = SpartaGameState->GetCurrentWave();
 
+	UE_LOG(LogTemp, Warning, TEXT("Level %d, Wave %d Ω√¿€!"), CurrentLevelIndex, CurrentWaveIndex);
+
 	const int32 ItemToSpawn = LevelInfos[CurrentLevelIndex].Waves[CurrentWaveIndex].ItemToSpawn;
 	const float WaveDuration = LevelInfos[CurrentLevelIndex].Waves[CurrentWaveIndex].Duration;
 
