@@ -104,8 +104,6 @@ float ASpartaCharacter::TakeDamage(float DamageAmount, FDamageEvent const& Damag
 	float ActualDamage = Super::TakeDamage(DamageAmount, DamageEvent, EventInstigator, DamageCauser);
 	Health = FMath::Clamp(Health - DamageAmount, 0.0f, MaxHealth);
 
-	UE_LOG(LogTemp, Warning, TEXT("TakeDamage"));
-
 	if (Health <= 0.0f)
 	{
 		OnDeath();
@@ -118,7 +116,6 @@ void ASpartaCharacter::AddHealth(float Amout)
 {
 	Health = FMath::Clamp(Health + Amout, 0.0f, MaxHealth);
 	UpdateHPWidget();
-	UE_LOG(LogTemp, Warning, TEXT("AddHealth"));
 }
 
 void ASpartaCharacter::OnDeath()
