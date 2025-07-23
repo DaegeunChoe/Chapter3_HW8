@@ -10,7 +10,7 @@
 
 
 ## Youtube
-[![ALTTEXT]()
+[![ALTTEXT](https://img.youtube.com/vi/ISnB9HKyhkM/0.jpg)](https://www.youtube.com/watch?v=ISnB9HKyhkM)
 
 
 ## 시작 맵 정보
