@@ -65,6 +65,18 @@ void ASpartaPlayerController::ShowGameOver()
 	SetResultAnimation();
 }
 
+void ASpartaPlayerController::OnChangedWaveFeatures(FString FeatureString)
+{
+	if (HUDWidgetInstance)
+	{
+		if (UTextBlock* FeatureText = Cast<UTextBlock>(HUDWidgetInstance->GetWidgetFromName(TEXT("WaveFeatures"))))
+		{
+			FText NewText = FText::FromString(FeatureString);
+			FeatureText->SetText(NewText);
+		}
+	}
+}
+
 void ASpartaPlayerController::OnUpdateScore(int32 NewScore)
 {
 	if (HUDWidgetInstance)

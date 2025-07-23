@@ -255,7 +255,8 @@ bool ASpartaCharacter::HasTimerEffect(FName EffectName)
 {
 	if (Effects.Contains(EffectName))
 	{
-		return Effects[EffectName].Handle.IsValid();
+		FTimerHandle& Handle = Effects[EffectName].Handle;
+		return Handle.IsValid() && GetWorldTimerManager().IsTimerActive(Handle);
 	}
 	else
 	{

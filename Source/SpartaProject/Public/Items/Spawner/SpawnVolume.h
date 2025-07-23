@@ -19,11 +19,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ABaseItem* SpawnRandomItem();
 
+	UFUNCTION(BlueprintCallable)
+	ABaseItem* SpawnSpikeItem();
+
+	UFUNCTION(BlueprintCallable)
+	ABaseItem* SpawnExplosion();
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Spawning")
 	TObjectPtr<UDataTable> ItemDataTable;
 
 protected:
 	FVector GetRandomPointInVolume() const;
+	FVector GetRandomXYPointInVolume(float Z) const;
 	FItemSpawnRow* GetRandomItem() const;
 	ABaseItem* SpawnItem(TSubclassOf<ABaseItem> ItemClass);
 
@@ -33,4 +40,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Spawning")
 	TObjectPtr<UBoxComponent> SpawningBox;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawning")
+	TSubclassOf<ABaseItem> SpikeItemClass;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Spawning")
+	TSubclassOf<ABaseItem> ExplosionClass;
 };

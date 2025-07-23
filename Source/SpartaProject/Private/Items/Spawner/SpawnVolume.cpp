@@ -32,6 +32,30 @@ ABaseItem* ASpawnVolume::SpawnRandomItem()
 	return SpawnItem(ItemClass);
 }
 
+ABaseItem* ASpawnVolume::SpawnSpikeItem()
+{
+	if (SpikeItemClass != nullptr)
+	{
+		return GetWorld()->SpawnActor<ABaseItem>(SpikeItemClass, GetRandomXYPointInVolume(-300.0f), FRotator::ZeroRotator);
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+ABaseItem* ASpawnVolume::SpawnExplosion()
+{
+	if (ExplosionClass != nullptr)
+	{
+		return GetWorld()->SpawnActor<ABaseItem>(ExplosionClass, GetRandomPointInVolume(), FRotator::ZeroRotator);
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
 ABaseItem* ASpawnVolume::SpawnItem(TSubclassOf<ABaseItem> ItemClass)
 {
 	if (ItemClass == nullptr)
@@ -51,6 +75,20 @@ FVector ASpawnVolume::GetRandomPointInVolume() const
 		FMath::FRandRange(-BoxExtent.X, BoxExtent.X),
 		FMath::FRandRange(-BoxExtent.Y, BoxExtent.Y),
 		FMath::FRandRange(-BoxExtent.Z, BoxExtent.Z)
+	);
+
+	return BoxOrigin + Random;
+}
+
+FVector ASpawnVolume::GetRandomXYPointInVolume(float Z) const
+{
+	FVector BoxExtent = SpawningBox->GetScaledBoxExtent(); // 중심부터 끝 까지의 거리
+	FVector BoxOrigin = SpawningBox->GetComponentLocation(); // 중심 위치
+
+	FVector Random(
+		FMath::FRandRange(-BoxExtent.X, BoxExtent.X),
+		FMath::FRandRange(-BoxExtent.Y, BoxExtent.Y),
+		Z
 	);
 
 	return BoxOrigin + Random;

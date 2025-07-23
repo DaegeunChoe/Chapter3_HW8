@@ -29,7 +29,7 @@ void ASpartaGameMode::CollectCoinAndAddScore(int32 CoinPoint)
 
 		if (SpartaGameState->IsAllCoinCollected())
 		{
-			EndLevel();
+			EndWave();
 		}
 	}
 }
@@ -49,6 +49,15 @@ void ASpartaGameMode::BeginPlay()
 			//StartLevel();
 		}
 	}
+}
+
+void ASpartaGameMode::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	if (ExplosionTimerHandle.IsValid())
+	{
+		GetWorldTimerManager().ClearTimer(ExplosionTimerHandle);
+	}
+	Super::EndPlay(EndPlayReason);
 }
 
 void ASpartaGameMode::StartLevel()
@@ -103,6 +112,7 @@ void ASpartaGameMode::StartWave()
 
 	int32 SpawnCoinCount = 0;
 	SpawnItems(ItemToSpawn, SpawnCoinCount);
+	ActivateWaveFeatures(LevelInfos[CurrentLevelIndex].Waves[CurrentWaveIndex].FeaturesToActive);
 
 	GetWorldTimerManager().SetTimer(WaveTimerHandle, this, &ASpartaGameMode::OnWaveTimeUp, WaveDuration, false);
 	GetWorldTimerManager().SetTimer(RemainTimeUpdateHandle, this, &ThisClass::UpdateRemainTime, 0.1f, true);
@@ -182,6 +192,69 @@ void ASpartaGameMode::ClearWave()
 	{
 		FoundItems[n]->Destroy();
 	}
+}
+
+void ASpartaGameMode::ActivateWaveFeatures(TArray<FName> Features)
+{
+	FString FeatureString(TEXT(""));
+	if (Features.Contains(FName(TEXT("Spike"))))
+	{
+		SpawnSpike(10);
+		FeatureString += "Activate Spike!\n";
+	}
+	if (Features.Contains(FName(TEXT("Explosion"))))
+	{
+		StartSpawnExplosion();
+		FeatureString += "Activate Explosion!\n";
+	}
+
+	if (APlayerController* PC = GetWorld()->GetFirstPlayerController())
+	{
+		if (ASpartaPlayerController* SpartaPC = Cast<ASpartaPlayerController>(PC))
+		{
+			SpartaPC->OnChangedWaveFeatures(FeatureString);
+		}
+	}
+}
+
+void ASpartaGameMode::SpawnSpike(int32 ItemToSpawn)
+{
+	TArray<AActor*> FoundVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
+
+	for (int32 n = 0; n < ItemToSpawn; n++)
+	{
+		if (FoundVolumes.Num() > 0)
+		{
+			if (ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[0]))
+			{
+				ABaseItem* SpawnedItem = SpawnVolume->SpawnSpikeItem();
+			}
+		}
+	}
+}
+
+void ASpartaGameMode::SpawnExplosion()
+{
+	TArray<AActor*> FoundVolumes;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASpawnVolume::StaticClass(), FoundVolumes);
+
+	for (int32 n = 0; n < 4; n++)
+	{
+		if (FoundVolumes.Num() > 0)
+		{
+			if (ASpawnVolume* SpawnVolume = Cast<ASpawnVolume>(FoundVolumes[0]))
+			{
+				ABaseItem* SpawnedItem = SpawnVolume->SpawnExplosion();
+			}
+		}
+	}
+}
+
+void ASpartaGameMode::StartSpawnExplosion()
+{
+
+	GetWorldTimerManager().SetTimer(ExplosionTimerHandle, this, &ASpartaGameMode::SpawnExplosion, 4.0f, true);
 }
 
 void ASpartaGameMode::OnWaveTimeUp()
